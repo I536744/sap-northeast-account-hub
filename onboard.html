@@ -657,13 +657,13 @@
           canvas.height = img.naturalHeight;
           canvas.getContext('2d').drawImage(img, 0, 0);
           state.logoBase64 = canvas.toDataURL('image/png');
-          // Compressed version for URL param (max 180×90, JPEG 0.7)
-          const cw = Math.min(img.naturalWidth, 180);
+          // Compressed version for URL param — keep tiny so it fits in URL (max 100×50, JPEG 0.4)
+          const cw = Math.min(img.naturalWidth, 100);
           const ch = Math.round(img.naturalHeight * (cw / img.naturalWidth));
           const cc = document.createElement('canvas');
           cc.width = cw; cc.height = ch;
           cc.getContext('2d').drawImage(img, 0, 0, cw, ch);
-          state.logoCompressed = cc.toDataURL('image/jpeg', 0.7);
+          state.logoCompressed = cc.toDataURL('image/jpeg', 0.4);
           showLogoPreview(state.logoBase64);
         };
         img.src = e.target.result;
@@ -848,9 +848,15 @@
       if (state.tabs['tab-csm'])      tabs.push('csm');
       if (state.tabs['tab-onboard'])  tabs.push('onboard');
       if (state.tabs['tab-raid'])     tabs.push('raid');
-      // Template URL (functional preview) — customer dedicated URL comes after deployment
       const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
       const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
+      if (state.logoCompressed) {
+        // Strip data URL prefix, convert to URL-safe base64 (+ → -, / → _, no padding)
+        const b64 = state.logoCompressed
+          .replace(/^data:image\/[^;]+;base64,/, '')
+          .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        params.set('logo', b64);
+      }
       return base + '?' + params.toString();
     }
 
