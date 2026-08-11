@@ -1,0 +1,11 @@
+[
+  {
+    "slug": "ibm",
+    "name": "IBM",
+    "subtitle": "OneSAP at IBM",
+    "url": "https://ne-ibm-onesap.cfapps.us10.hana.ondemand.com",
+    "accent": "#0057D2",
+    "industry": "Technology",
+    "region": "Northeast"
+  }
+]

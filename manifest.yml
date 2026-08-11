@@ -1,0 +1,10 @@
+---
+applications:
+  - name: ne-onesap-hub
+    memory: 64M
+    disk_quota: 128M
+    instances: 1
+    buildpacks:
+      - staticfile_buildpack
+    routes:
+      - route: ne-onesap-hub.cfapps.us10.hana.ondemand.com
