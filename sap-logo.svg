@@ -1,0 +1,11 @@
+<svg viewBox="0 0 160 96" xmlns="http://www.w3.org/2000/svg" aria-label="SAP">
+  <defs>
+    <linearGradient id="sg" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#0058A0"/>
+      <stop offset="100%" stop-color="#00AEEF"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="96" fill="url(#sg)"/>
+  <polygon points="160,0 160,96 58,96" fill="white"/>
+  <text x="7" y="73" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="62" fill="white">SAP</text>
+</svg>
