@@ -3,801 +3,846 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>One SAP — Create Your Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <title>Dashboard Setup — One SAP</title>
   <style>
-    @font-face { font-family: "72"; font-weight: 300; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2"); }
-    @font-face { font-family: "72"; font-weight: 400; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2"); }
-    @font-face { font-family: "72"; font-weight: 700; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2"); }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @font-face { font-family:"72"; font-weight:300; font-style:normal; src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2"); }
+    @font-face { font-family:"72"; font-weight:400; font-style:normal; src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2"); }
+    @font-face { font-family:"72"; font-weight:700; font-style:normal; src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2"); }
 
     :root {
       --accent: #0070F2;
       --accent-dark: #0040B0;
       --accent-light: #BDD9FF;
-      --bg-deep: #00144A;
-      --bg-mid: #002A86;
+      --deep: #00144A;
+      --mid: #002A86;
     }
-
+    * { box-sizing:border-box; margin:0; padding:0; }
     body {
-      font-family: "72", Arial, sans-serif;
-      min-height: 100vh;
+      font-family:"72", Arial, sans-serif;
+      min-height:100vh;
       background: linear-gradient(135deg, #00144A 0%, #002A86 60%, #0070F2 100%);
-      background-attachment: fixed;
-      color: #fff;
+      background-attachment:fixed;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:40px 20px 60px;
+      gap:28px;
     }
 
-    /* ── TOP NAV ── */
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 32px;
-      background: rgba(0,0,0,0.25);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+    /* ── Top bar ── */
+    .topbar {
+      width:100%; max-width:900px;
+      display:flex; align-items:center; gap:14px;
     }
-    nav img { height: 32px; }
-    nav .nav-title { font-size: 16px; font-weight: 700; }
-    nav a { margin-left: auto; color: rgba(255,255,255,0.6); font-size: 13px; text-decoration: none; }
-    nav a:hover { color: #fff; }
+    .topbar img { height:36px; }
+    .topbar-title { color:#fff; font-size:18px; font-weight:700; }
+    .topbar-sub { color:rgba(255,255,255,.55); font-size:12px; margin-top:2px; }
+    .back-link {
+      margin-left:auto; color:rgba(255,255,255,.6); font-size:13px;
+      text-decoration:none; display:flex; align-items:center; gap:5px;
+    }
+    .back-link:hover { color:#fff; }
 
-    /* ── WIZARD WRAPPER ── */
-    .wizard { max-width: 860px; margin: 40px auto; padding: 0 24px 80px; }
-
-    /* ── STEP PROGRESS ── */
+    /* ── Progress steps ── */
     .steps {
-      display: flex;
-      gap: 0;
-      margin-bottom: 36px;
+      display:flex; gap:0; align-items:center;
+      width:100%; max-width:420px;
     }
-    .step-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      position: relative;
+    .step {
+      display:flex; align-items:center; gap:8px; flex:1;
+      color:rgba(255,255,255,.35); font-size:12px; font-weight:600;
     }
-    .step-item:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      width: 100%;
-      height: 2px;
-      background: rgba(255,255,255,0.15);
+    .step .dot {
+      width:28px; height:28px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.25);
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; flex-shrink:0;
+      transition: all .2s;
     }
-    .step-item.done::after, .step-item.active::after { background: var(--accent-light); }
-    .step-dot {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      border: 2px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700;
-      position: relative; z-index: 1;
-    }
-    .step-item.done .step-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .step-item.active .step-dot { border-color: var(--accent); color: var(--accent); }
-    .step-label { font-size: 11px; color: rgba(255,255,255,0.45); text-align: center; }
-    .step-item.active .step-label { color: #fff; font-weight: 700; }
-    .step-item.done .step-label { color: var(--accent-light); }
+    .step.active .dot { border-color:var(--accent); background:var(--accent); color:#fff; }
+    .step.done .dot { border-color:#69F0AE; background:#69F0AE; color:#00144A; }
+    .step.active { color:#fff; }
+    .step.done { color:rgba(255,255,255,.6); }
+    .step-line { flex:1; height:2px; background:rgba(255,255,255,.15); margin:0 6px; }
+    .step-line.done { background:#69F0AE; }
 
-    /* ── CARD ── */
+    /* ── Card ── */
     .card {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 32px;
+      width:100%; max-width:900px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:16px;
+      padding:32px 36px;
+      backdrop-filter:blur(8px);
     }
-    .card h2 { font-size: 20px; margin-bottom: 6px; }
-    .card .hint { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }
+    .card-title {
+      font-size:20px; font-weight:700; color:#fff; margin-bottom:6px;
+    }
+    .card-sub {
+      font-size:13px; color:rgba(255,255,255,.55); margin-bottom:28px;
+    }
 
-    /* ── FORM ── */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-grid.full { grid-template-columns: 1fr; }
-    .field { display: flex; flex-direction: column; gap: 6px; }
-    .field.span2 { grid-column: span 2; }
-    label { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 600; letter-spacing: .4px; }
-    input[type=text], input[type=email], input[type=number], input[type=date], select, textarea {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 8px;
-      padding: 10px 13px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-      transition: border-color .15s;
-      width: 100%;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--accent-light); background: rgba(255,255,255,0.12); }
-    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.3); }
-    select option { background: #001A5C; color: #fff; }
-    textarea { resize: vertical; min-height: 80px; }
+    /* ── Two-column layout ── */
+    .cols { display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
+    @media (max-width:720px) { .cols { grid-template-columns:1fr; } }
 
-    .upload-row { display: flex; align-items: center; gap: 12px; }
-    .upload-btn {
-      display: inline-flex; align-items: center;
-      padding: 10px 18px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 8px;
-      font-size: 14px; color: rgba(255,255,255,0.7);
-      cursor: pointer; transition: border-color .15s, background .15s;
+    /* ── Form fields ── */
+    .field { margin-bottom:20px; }
+    .field label {
+      display:block; font-size:12px; font-weight:700;
+      color:rgba(255,255,255,.6); margin-bottom:6px;
+      text-transform:uppercase; letter-spacing:.4px;
     }
-    .upload-btn:hover { border-color: var(--accent-light); background: rgba(255,255,255,0.12); color: #fff; }
-    input[type=color] {
-      width: 44px; height: 38px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: transparent;
-      cursor: pointer;
-      padding: 2px;
+    .field input[type=text] {
+      width:100%; padding:11px 14px;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:8px; color:#fff; font-family:"72",Arial,sans-serif;
+      font-size:14px; outline:none;
+      transition:border-color .15s, background .15s;
     }
+    .field input[type=text]::placeholder { color:rgba(255,255,255,.3); }
+    .field input[type=text]:focus {
+      border-color:var(--accent); background:rgba(255,255,255,.14);
+    }
+
+    /* Color row */
+    .color-row { display:flex; align-items:center; gap:10px; }
+    .color-picker {
+      width:46px; height:46px; padding:2px; cursor:pointer; border-radius:8px; flex-shrink:0;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+    }
+    .color-picker input { width:100%; height:100%; border:none; cursor:pointer; background:transparent; padding:0; }
     .color-hex {
-      flex: 1;
+      flex:1; padding:11px 14px;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:8px; color:#fff; font-family:"72",Arial,sans-serif; font-size:14px;
+      outline:none; transition:border-color .15s;
+    }
+    .color-hex:focus { border-color:var(--accent); }
+
+    /* Color swatches */
+    .swatches { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .swatch {
+      width:28px; height:28px; border-radius:6px; cursor:pointer;
+      border:2px solid transparent; transition:transform .1s, border-color .1s;
+    }
+    .swatch:hover { transform:scale(1.15); border-color:rgba(255,255,255,.5); }
+
+    /* Logo upload */
+    .logo-upload {
+      border:2px dashed rgba(255,255,255,.25);
+      border-radius:10px; padding:20px;
+      text-align:center; cursor:pointer;
+      transition:border-color .15s, background .15s;
+    }
+    .logo-upload:hover { border-color:var(--accent); background:rgba(0,112,242,.08); }
+    .logo-upload .upload-hint { font-size:13px; color:rgba(255,255,255,.45); margin-top:6px; }
+    .logo-upload .upload-ico { font-size:28px; }
+    #logo-preview {
+      max-height:60px; max-width:180px; object-fit:contain; display:none;
+      margin:0 auto 8px; border-radius:4px;
+    }
+    .clear-logo {
+      font-size:11px; color:rgba(255,255,255,.4); cursor:pointer;
+      text-decoration:underline; display:none; margin-top:6px;
     }
 
-    /* ── MILESTONE TABLE ── */
-    .ms-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-    .ms-table th { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .ms-table td { padding: 6px 6px; }
-    .ms-table input, .ms-table select { padding: 7px 10px; font-size: 13px; }
-    .add-row-btn {
-      background: rgba(76,177,255,0.12);
-      border: 1px dashed rgba(76,177,255,0.4);
-      color: var(--accent-light);
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 13px;
-      cursor: pointer;
-      width: 100%;
+    /* ── Service checkboxes ── */
+    .services-grid { display:flex; flex-direction:column; gap:12px; }
+    .svc-group {
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:10px; padding:16px 18px;
     }
-    .add-row-btn:hover { background: rgba(76,177,255,0.2); }
-    .del-btn { background: none; border: none; color: rgba(255,100,100,0.6); cursor: pointer; font-size: 16px; padding: 0 6px; }
-    .del-btn:hover { color: #ff6b6b; }
-
-    /* ── NAV BUTTONS ── */
-    .btn-row { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; }
-    .btn {
-      padding: 11px 28px;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      transition: opacity .15s;
+    .svc-group-header {
+      display:flex; align-items:center; gap:10px;
+      cursor:pointer; user-select:none;
     }
-    .btn:hover { opacity: 0.85; }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-dark); }
-    .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-    .btn:disabled { opacity: 0.3; cursor: default; }
-
-    /* ── HIDDEN STEPS ── */
-    .step-panel { display: none; }
-    .step-panel.active { display: block; }
-
-    /* ─────────────────────────────────────────
-       DASHBOARD PREVIEW
-    ───────────────────────────────────────── */
-    #preview-panel {
-      background: #0f172a;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
+    .custom-check {
+      width:20px; height:20px; border-radius:5px;
+      border:2px solid rgba(255,255,255,.3); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .15s; background:transparent;
     }
-
-    .db-topbar {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 24px;
-      background: #1e293b;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+    .custom-check.checked {
+      border-color:var(--accent); background:var(--accent);
     }
-    .db-logo { height: 36px; width: 36px; border-radius: 6px; object-fit: contain; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; }
-    .db-logo img { height: 36px; width: 36px; border-radius: 6px; object-fit: contain; }
-    .db-name { font-size: 16px; font-weight: 700; }
-    .db-sub { font-size: 12px; color: rgba(255,255,255,0.5); }
-    .db-pill {
-      margin-left: auto;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: rgba(76,177,255,0.15);
-      color: var(--accent-light);
-      border: 1px solid rgba(76,177,255,0.3);
+    .custom-check svg { display:none; }
+    .custom-check.checked svg { display:block; }
+    .svc-name { font-size:14px; font-weight:700; color:#fff; }
+    .svc-desc { font-size:11px; color:rgba(255,255,255,.45); margin-top:1px; }
+    .svc-sub { padding:10px 0 0 30px; display:none; flex-direction:column; gap:8px; }
+    .svc-sub.open { display:flex; }
+    .svc-sub-item {
+      display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none;
+    }
+    .sub-check {
+      width:16px; height:16px; border-radius:4px;
+      border:1.5px solid rgba(255,255,255,.25); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .15s;
+    }
+    .sub-check.checked { border-color:var(--accent); background:var(--accent); }
+    .sub-check.checked svg { display:block; }
+    .sub-check svg { display:none; width:10px; height:10px; }
+    .svc-sub-item span { font-size:13px; color:rgba(255,255,255,.7); }
+
+    /* ── Preview panel ── */
+    .preview-panel {
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      overflow:hidden;
+    }
+    .preview-label {
+      font-size:11px; font-weight:700; color:rgba(255,255,255,.4);
+      text-transform:uppercase; letter-spacing:.5px;
+      padding:10px 14px; border-bottom:1px solid rgba(255,255,255,.08);
     }
 
-    .db-body { padding: 20px 24px; }
-
-    /* KPI cards */
-    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    .kpi-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 14px;
+    /* Mini dashboard mockup */
+    .dash-mock-header {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 14px;
+      transition:background .3s;
     }
-    .kpi-label { font-size: 10px; color: rgba(255,255,255,0.45); font-weight: 600; letter-spacing: .4px; text-transform: uppercase; }
-    .kpi-val { font-size: 22px; font-weight: 700; margin-top: 4px; }
-    .kpi-trend { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
-
-    /* Charts row */
-    .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .chart-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 14px;
+    .dash-mock-logo { height:28px; width:auto; max-width:100px; object-fit:contain; }
+    .dash-mock-logo-placeholder {
+      height:28px; width:90px;
+      border-radius:4px;
+      background:rgba(255,255,255,.15);
     }
-    .chart-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
-    .chart-card canvas { max-height: 140px; }
-
-    /* Contacts + milestones */
-    .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .section-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 14px;
+    .dash-mock-title { font-size:13px; font-weight:700; color:#fff; }
+    .dash-mock-sub { font-size:10px; color:rgba(255,255,255,.5); }
+    .dash-mock-tabs {
+      display:flex; gap:0;
+      background:rgba(0,0,0,.3);
+      padding:0 12px; overflow:hidden;
     }
-    .section-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
-
-    .contact-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-    .contact-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700;
-      flex-shrink: 0;
+    .dash-mock-tab {
+      font-size:10px; padding:7px 10px; cursor:default;
+      color:rgba(255,255,255,.5); font-weight:600;
+      border-bottom:2px solid transparent; white-space:nowrap;
     }
-    .contact-info { min-width: 0; }
-    .contact-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .contact-role { font-size: 11px; color: rgba(255,255,255,0.45); }
-
-    .ms-row-preview { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
-    .ms-status {
-      padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700;
-      white-space: nowrap;
+    .dash-mock-tab.act { color:#fff; transition:border-color .3s; }
+    .dash-mock-body { padding:12px; display:flex; flex-direction:column; gap:8px; }
+    .mock-kpi-row { display:flex; gap:8px; }
+    .mock-kpi {
+      flex:1; border-radius:6px; padding:8px 10px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
     }
-    .ms-status.complete { background: rgba(105,240,174,0.15); color: #69F0AE; }
-    .ms-status.on-track { background: rgba(76,177,255,0.15); color: #4CB1FF; }
-    .ms-status.at-risk { background: rgba(255,138,128,0.15); color: #FF8A80; }
-    .ms-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ms-date { color: rgba(255,255,255,0.4); font-size: 11px; white-space: nowrap; }
-
-    /* download CTA */
-    .preview-footer {
-      padding: 16px 24px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .mock-kpi-n { font-size:16px; font-weight:700; color:#fff; }
+    .mock-kpi-l { font-size:9px; color:rgba(255,255,255,.4); margin-top:1px; }
+    .mock-card {
+      border-radius:6px; background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);
+      padding:10px 12px;
     }
-    .preview-footer p { font-size: 13px; color: rgba(255,255,255,0.5); }
-    .btn-request { background: var(--accent); color: #fff; padding: 10px 24px; border-radius: 9px; font-size: 14px; font-weight: 700; font-family: "72", Arial, sans-serif; border: none; cursor: pointer; }
-    .btn-request:hover { background: var(--accent-dark); }
+    .mock-card-title { font-size:10px; font-weight:700; color:rgba(255,255,255,.6); margin-bottom:6px; }
+    .mock-bar-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+    .mock-bar-label { font-size:9px; color:rgba(255,255,255,.4); width:50px; text-align:right; flex-shrink:0; }
+    .mock-bar-track { flex:1; height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
+    .mock-bar-fill { height:100%; border-radius:3px; transition:background .3s, width .4s; }
+    .mock-empty {
+      text-align:center; padding:16px 0;
+      font-size:11px; color:rgba(255,255,255,.25);
+    }
 
-    @media(max-width:600px){
-      .form-grid { grid-template-columns: 1fr; }
-      .field.span2 { grid-column: span 1; }
-      .kpi-row { grid-template-columns: repeat(2,1fr); }
-      .charts-row, .bottom-row { grid-template-columns: 1fr; }
+    /* ── Buttons ── */
+    .btn-row { display:flex; gap:12px; margin-top:28px; justify-content:flex-end; }
+    .btn-primary {
+      background:var(--accent); color:#fff; border:none;
+      border-radius:8px; padding:12px 28px;
+      font-size:14px; font-weight:700; font-family:"72",Arial,sans-serif;
+      cursor:pointer; transition:background .15s, box-shadow .15s;
+      box-shadow:0 4px 16px rgba(0,112,242,.4);
+    }
+    .btn-primary:hover { background:var(--accent-dark); }
+    .btn-secondary {
+      background:rgba(255,255,255,.1); color:rgba(255,255,255,.8);
+      border:1px solid rgba(255,255,255,.2); border-radius:8px;
+      padding:12px 24px; font-size:14px; font-weight:600;
+      font-family:"72",Arial,sans-serif; cursor:pointer;
+      transition:background .15s;
+    }
+    .btn-secondary:hover { background:rgba(255,255,255,.16); }
+    .btn-download {
+      display:inline-flex; align-items:center; gap:8px;
+      background:#69F0AE; color:#00144A; border:none;
+      border-radius:8px; padding:13px 28px;
+      font-size:14px; font-weight:700; font-family:"72",Arial,sans-serif;
+      cursor:pointer; transition:background .15s, box-shadow .15s;
+      box-shadow:0 4px 16px rgba(105,240,174,.35);
+    }
+    .btn-download:hover { background:#4CE8A0; }
+
+    /* ── Step containers ── */
+    .step-page { display:none; }
+    .step-page.active { display:block; }
+
+    /* ── Done box ── */
+    .done-box {
+      text-align:center; padding:16px 0 24px;
+    }
+    .done-box .check-ico {
+      width:56px; height:56px; border-radius:50%;
+      background:rgba(105,240,174,.15); margin:0 auto 14px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .done-box h2 { color:#fff; font-size:22px; font-weight:700; margin-bottom:8px; }
+    .done-box p { color:rgba(255,255,255,.55); font-size:13px; max-width:380px; margin:0 auto 24px; }
+    .deploy-steps {
+      background:rgba(0,0,0,.25); border-radius:10px;
+      padding:20px 24px; text-align:left;
+    }
+    .deploy-steps h4 { color:rgba(255,255,255,.9); font-size:13px; margin-bottom:12px; font-weight:700; }
+    .deploy-step-item {
+      display:flex; gap:10px; margin-bottom:10px;
+      font-size:12px; color:rgba(255,255,255,.6); align-items:flex-start;
+    }
+    .deploy-step-item .n {
+      width:20px; height:20px; border-radius:50%;
+      background:var(--accent); color:#fff; font-size:10px; font-weight:700;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
+    }
+    code {
+      background:rgba(255,255,255,.1); border-radius:4px;
+      padding:2px 6px; font-family:monospace; font-size:11px; color:#BDD9FF;
     }
   </style>
 </head>
 <body>
 
-<nav>
-  <img src="./sap-logo.svg" alt="SAP">
-  <span class="nav-title">One SAP — Create Your Dashboard</span>
-  <a href="./index.html">← Back to Hub</a>
-</nav>
+  <div class="topbar">
+    <img src="./sap-logo.svg" alt="SAP">
+    <div>
+      <div class="topbar-title">One SAP</div>
+      <div class="topbar-sub">Dashboard Setup</div>
+    </div>
+    <a href="./index.html" class="back-link">← Back to Hub</a>
+  </div>
 
-<div class="wizard">
-
-  <!-- STEP PROGRESS -->
-  <div class="steps" id="step-progress">
-    <div class="step-item active" data-step="1">
-      <div class="step-dot">1</div>
-      <span class="step-label">Company</span>
+  <!-- Progress indicator -->
+  <div class="steps">
+    <div class="step active" id="s1">
+      <div class="dot">1</div>
+      <span>Branding</span>
     </div>
-    <div class="step-item" data-step="2">
-      <div class="step-dot">2</div>
-      <span class="step-label">Engagement</span>
+    <div class="step-line" id="sl1"></div>
+    <div class="step" id="s2">
+      <div class="dot">2</div>
+      <span>Services</span>
     </div>
-    <div class="step-item" data-step="3">
-      <div class="step-dot">3</div>
-      <span class="step-label">Contacts</span>
-    </div>
-    <div class="step-item" data-step="4">
-      <div class="step-dot">4</div>
-      <span class="step-label">Milestones</span>
-    </div>
-    <div class="step-item" data-step="5">
-      <div class="step-dot">✓</div>
-      <span class="step-label">Preview</span>
+    <div class="step-line" id="sl2"></div>
+    <div class="step" id="s3">
+      <div class="dot">3</div>
+      <span>Download</span>
     </div>
   </div>
 
-  <!-- STEP 1: COMPANY -->
-  <div class="step-panel active card" id="panel-1">
-    <h2>Company Information</h2>
-    <p class="hint">This branding will appear at the top of your dashboard.</p>
-    <div class="form-grid">
-      <div class="field span2">
-        <label>COMPANY NAME</label>
-        <input type="text" id="f-name" placeholder="e.g. Pfizer" oninput="save()">
-      </div>
-      <div class="field span2">
-        <label>COMPANY LOGO <span style="font-weight:400;color:rgba(255,255,255,0.3)">(optional)</span></label>
-        <div class="upload-row">
-          <label class="upload-btn" for="f-logo-file">
-            <span id="upload-label">Choose image…</span>
-          </label>
-          <input type="file" id="f-logo-file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
-          <div id="logo-preview" style="display:none">
-            <img id="logo-thumb" src="" alt="" style="height:36px;border-radius:6px;object-fit:contain;background:rgba(255,255,255,0.08);padding:4px;">
-            <button type="button" onclick="clearLogo()" style="background:none;border:none;color:rgba(255,100,100,0.7);cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">✕</button>
+  <!-- ── STEP 1: Branding ── -->
+  <div class="card step-page active" id="page-1">
+    <div class="cols">
+      <div>
+        <div class="card-title">Brand your dashboard</div>
+        <div class="card-sub">Set your company name, logo, and accent color. Your dashboard will match your brand exactly.</div>
+
+        <div class="field">
+          <label>Company Name</label>
+          <input type="text" id="f-name" placeholder="e.g. Accenture" oninput="syncPreview()">
+        </div>
+
+        <div class="field">
+          <label>Company Logo</label>
+          <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
+            <input type="file" id="logo-file" accept="image/*" onchange="handleLogo(this)" style="display:none">
+            <img id="logo-preview" src="" alt="logo">
+            <div class="upload-ico" id="upload-ico">📁</div>
+            <div class="upload-hint" id="upload-hint">Click to upload logo (PNG, SVG, JPG)</div>
+            <div class="clear-logo" id="clear-logo" onclick="event.stopPropagation();clearLogo()">Remove</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Accent Color</label>
+          <div class="color-row">
+            <div class="color-picker">
+              <input type="color" id="f-color" value="#0070F2" oninput="onColorPicker()">
+            </div>
+            <input type="text" class="color-hex" id="f-hex" value="#0070F2" maxlength="7"
+                   placeholder="#0070F2" oninput="onHexInput()">
+          </div>
+          <div class="swatches">
+            <div class="swatch" style="background:#0070F2" onclick="setColor('#0070F2')" title="SAP Blue"></div>
+            <div class="swatch" style="background:#0057D2" onclick="setColor('#0057D2')" title="IBM Blue"></div>
+            <div class="swatch" style="background:#107E3E" onclick="setColor('#107E3E')" title="Green"></div>
+            <div class="swatch" style="background:#E76500" onclick="setColor('#E76500')" title="Orange"></div>
+            <div class="swatch" style="background:#6A1B79" onclick="setColor('#6A1B79')" title="Purple"></div>
+            <div class="swatch" style="background:#BB0000" onclick="setColor('#BB0000')" title="Red"></div>
+            <div class="swatch" style="background:#002A86" onclick="setColor('#002A86')" title="Deep Blue"></div>
+            <div class="swatch" style="background:#475E75" onclick="setColor('#475E75')" title="Grey"></div>
           </div>
         </div>
       </div>
-      <div class="field">
-        <label>INDUSTRY</label>
-        <select id="f-industry" onchange="save()">
-          <option value="">Select…</option>
-          <option>Technology</option>
-          <option>Healthcare & Life Sciences</option>
-          <option>Financial Services</option>
-          <option>Manufacturing</option>
-          <option>Retail & Consumer</option>
-          <option>Energy & Utilities</option>
-          <option>Public Sector</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>ACCENT COLOR</label>
-        <div class="color-row">
-          <input type="color" id="f-color-pick" value="#0057D2" oninput="syncColor('pick')">
-          <input type="text" id="f-color-hex" class="color-hex" value="#0057D2" placeholder="#0057D2" oninput="syncColor('hex')">
+
+      <!-- Live preview -->
+      <div>
+        <div class="preview-label">Live Preview</div>
+        <div class="preview-panel">
+          <div class="dash-mock-header" id="prev-header" style="background:#002A86">
+            <img id="prev-logo" class="dash-mock-logo" src="" style="display:none">
+            <div class="dash-mock-logo-placeholder" id="prev-logo-ph"></div>
+            <div>
+              <div class="dash-mock-title" id="prev-title">OneSAP at Your Company</div>
+              <div class="dash-mock-sub">Account Level Dashboard</div>
+            </div>
+          </div>
+          <div class="dash-mock-tabs" id="prev-tabs">
+            <div class="dash-mock-tab act" id="prev-tab-active" style="border-bottom-color:#0070F2">Summary</div>
+            <div class="dash-mock-tab">PS</div>
+            <div class="dash-mock-tab">MAX</div>
+            <div class="dash-mock-tab">CAS</div>
+            <div class="dash-mock-tab">RAID</div>
+          </div>
+          <div class="dash-mock-body">
+            <div class="mock-kpi-row">
+              <div class="mock-kpi"><div class="mock-kpi-n">0</div><div class="mock-kpi-l">Total Initiatives</div></div>
+              <div class="mock-kpi"><div class="mock-kpi-n" style="color:#FF8A80">0</div><div class="mock-kpi-l">At Risk</div></div>
+              <div class="mock-kpi"><div class="mock-kpi-n" style="color:#69F0AE">0</div><div class="mock-kpi-l">On Track</div></div>
+              <div class="mock-kpi"><div class="mock-kpi-n">0</div><div class="mock-kpi-l">Completed</div></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-title">Status Breakdown</div>
+              <div class="mock-bar-row">
+                <span class="mock-bar-label">On Track</span>
+                <div class="mock-bar-track"><div class="mock-bar-fill" style="width:0%;background:#69F0AE"></div></div>
+              </div>
+              <div class="mock-bar-row">
+                <span class="mock-bar-label">In Progress</span>
+                <div class="mock-bar-track"><div class="mock-bar-fill" id="bar-accent" style="width:0%"></div></div>
+              </div>
+              <div class="mock-bar-row">
+                <span class="mock-bar-label">At Risk</span>
+                <div class="mock-bar-track"><div class="mock-bar-fill" style="width:0%;background:#FF8A80"></div></div>
+              </div>
+              <div class="mock-empty">Your data will populate once deployed</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
     <div class="btn-row">
-      <div></div>
-      <button class="btn btn-primary" onclick="goStep(2)">Next →</button>
+      <button class="btn-primary" onclick="goStep(2)">Continue →</button>
     </div>
   </div>
 
-  <!-- STEP 2: ENGAGEMENT -->
-  <div class="step-panel card" id="panel-2">
-    <h2>Engagement Details</h2>
-    <p class="hint">Key metrics that will appear on your dashboard KPI cards.</p>
-    <div class="form-grid">
-      <div class="field">
-        <label>ENGAGEMENT HEALTH SCORE <span style="color:rgba(255,255,255,0.4)">(0–100)</span></label>
-        <input type="number" id="f-health" min="0" max="100" placeholder="85" oninput="save()">
+  <!-- ── STEP 2: Services ── -->
+  <div class="card step-page" id="page-2">
+    <div class="cols">
+      <div>
+        <div class="card-title">Which SAP services do you have?</div>
+        <div class="card-sub">Select the engagements active for this account — these control which tabs appear on your dashboard.</div>
+
+        <div class="services-grid">
+
+          <div class="svc-group">
+            <div class="svc-group-header" onclick="toggleSvc('ps')">
+              <div class="custom-check" id="check-ps">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div class="svc-name">Professional Services (PS)</div>
+                <div class="svc-desc">Active delivery projects, milestones, and PS engagements</div>
+              </div>
+            </div>
+            <div class="svc-sub" id="sub-ps">
+              <div class="svc-sub-item" onclick="toggleSubSvc('ps-s4')">
+                <div class="sub-check" id="check-ps-s4"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>S/4HANA Activations</span>
+              </div>
+              <div class="svc-sub-item" onclick="toggleSubSvc('ps-cloud')">
+                <div class="sub-check" id="check-ps-cloud"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>Cloud Migration</span>
+              </div>
+              <div class="svc-sub-item" onclick="toggleSubSvc('ps-btp')">
+                <div class="sub-check" id="check-ps-btp"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>BTP / Integration</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="svc-group">
+            <div class="svc-group-header" onclick="toggleSvc('max')">
+              <div class="custom-check" id="check-max">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div class="svc-name">MaxAttention (MAX)</div>
+                <div class="svc-desc">Premium support — dedicated SAP experts and EA workload tracking</div>
+              </div>
+            </div>
+            <div class="svc-sub" id="sub-max">
+              <div class="svc-sub-item" onclick="toggleSubSvc('max-arch')">
+                <div class="sub-check" id="check-max-arch"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>Architecture Review</span>
+              </div>
+              <div class="svc-sub-item" onclick="toggleSubSvc('max-sla')">
+                <div class="sub-check" id="check-max-sla"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>SLA / SLA+ Support</span>
+              </div>
+              <div class="svc-sub-item" onclick="toggleSubSvc('max-innovation')">
+                <div class="sub-check" id="check-max-innovation"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>Innovation Services</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="svc-group">
+            <div class="svc-group-header" onclick="toggleSvc('cas')">
+              <div class="custom-check" id="check-cas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div class="svc-name">Cloud Application Services (CAS)</div>
+                <div class="svc-desc">Managed cloud services and operations tracking</div>
+              </div>
+            </div>
+            <div class="svc-sub" id="sub-cas">
+              <div class="svc-sub-item" onclick="toggleSubSvc('cas-rise')">
+                <div class="sub-check" id="check-cas-rise"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>RISE with SAP</span>
+              </div>
+              <div class="svc-sub-item" onclick="toggleSubSvc('cas-grow')">
+                <div class="sub-check" id="check-cas-grow"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>GROW with SAP</span>
+              </div>
+              <div class="svc-sub-item" onclick="toggleSubSvc('cas-managed')">
+                <div class="sub-check" id="check-cas-managed"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <span>Managed Operations</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-      <div class="field">
-        <label>OPEN ISSUES / ACTION ITEMS</label>
-        <input type="number" id="f-issues" min="0" placeholder="4" oninput="save()">
-      </div>
-      <div class="field">
-        <label>CONTRACT VALUE</label>
-        <input type="text" id="f-contract" placeholder="$2.4M" oninput="save()">
-      </div>
-      <div class="field">
-        <label>RENEWAL DATE</label>
-        <input type="date" id="f-renewal" oninput="save()">
-      </div>
-      <div class="field">
-        <label>SAP ACCOUNT EXECUTIVE</label>
-        <input type="text" id="f-ae" placeholder="Jane Smith" oninput="save()">
-      </div>
-      <div class="field">
-        <label>ENGAGEMENT MANAGER</label>
-        <input type="text" id="f-em" placeholder="John Doe" oninput="save()">
+
+      <!-- Services preview -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="preview-panel">
+          <div class="preview-label">Dashboard Tabs</div>
+          <div style="padding:14px;">
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;">Tabs based on your selections:</div>
+            <div id="tabs-preview" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,.3);line-height:1.6;">
+              Always included: Summary · RAID Log · CSM Contacts · Events
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-panel">
+          <div class="preview-label">Config Preview</div>
+          <div style="padding:14px;">
+            <pre id="config-preview" style="font-size:10px;color:#BDD9FF;font-family:monospace;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto;"></pre>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(3)">Next →</button>
+      <button class="btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn-primary" onclick="goStep(3)">Generate Config →</button>
     </div>
   </div>
 
-  <!-- STEP 3: CONTACTS -->
-  <div class="step-panel card" id="panel-3">
-    <h2>Key Contacts</h2>
-    <p class="hint">Up to three contacts shown on the dashboard.</p>
-    <div class="form-grid">
-      <div class="field"><label>EXECUTIVE SPONSOR — NAME</label><input type="text" id="c1-name" placeholder="Alice Johnson" oninput="save()"></div>
-      <div class="field"><label>TITLE</label><input type="text" id="c1-title" placeholder="CIO" oninput="save()"></div>
-      <div class="field span2"><label>EMAIL</label><input type="email" id="c1-email" placeholder="alice@company.com" oninput="save()"></div>
+  <!-- ── STEP 3: Download ── -->
+  <div class="card step-page" id="page-3">
+    <div class="card-title">Ready to deploy</div>
+    <div class="card-sub">Download your config and send it to the SAP MaxAttention team. Your branded dashboard will be live in minutes.</div>
 
-      <div class="field"><label>PROJECT OWNER — NAME</label><input type="text" id="c2-name" placeholder="Bob Lee" oninput="save()"></div>
-      <div class="field"><label>TITLE</label><input type="text" id="c2-title" placeholder="VP IT" oninput="save()"></div>
-      <div class="field span2"><label>EMAIL</label><input type="email" id="c2-email" placeholder="bob@company.com" oninput="save()"></div>
+    <div class="cols" style="align-items:start; gap:28px;">
+      <!-- Dashboard preview -->
+      <div>
+        <div class="preview-label" style="margin-bottom:10px; padding:0;">Dashboard Preview</div>
+        <div class="preview-panel">
+          <div class="dash-mock-header" id="prev2-header" style="background:#002A86; padding:14px 18px;">
+            <img id="prev2-logo" class="dash-mock-logo" src="" style="display:none; height:36px;">
+            <div class="dash-mock-logo-placeholder" id="prev2-logo-ph" style="height:36px;width:120px;"></div>
+            <div>
+              <div class="dash-mock-title" id="prev2-title" style="font-size:15px;">OneSAP at Your Company</div>
+              <div class="dash-mock-sub">Account Level Dashboard</div>
+            </div>
+          </div>
+          <div id="prev2-tabs" class="dash-mock-tabs" style="padding:0 16px;"></div>
+          <div class="dash-mock-body" style="padding:16px;">
+            <div class="mock-kpi-row">
+              <div class="mock-kpi"><div class="mock-kpi-n">0</div><div class="mock-kpi-l">Total Initiatives</div></div>
+              <div class="mock-kpi"><div class="mock-kpi-n" style="color:#FF8A80">0</div><div class="mock-kpi-l">At Risk</div></div>
+              <div class="mock-kpi"><div class="mock-kpi-n" style="color:#69F0AE">0</div><div class="mock-kpi-l">On Track</div></div>
+              <div class="mock-kpi"><div class="mock-kpi-n">0</div><div class="mock-kpi-l">Completed</div></div>
+            </div>
+            <div class="mock-empty" style="padding:24px 0;">
+              Add initiatives, RAID items, and contacts after deployment to populate your dashboard.
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div class="field"><label>TECHNICAL LEAD — NAME</label><input type="text" id="c3-name" placeholder="Carol Wu" oninput="save()"></div>
-      <div class="field"><label>TITLE</label><input type="text" id="c3-title" placeholder="SAP Architect" oninput="save()"></div>
-      <div class="field span2"><label>EMAIL</label><input type="email" id="c3-email" placeholder="carol@company.com" oninput="save()"></div>
+      <!-- Download + next steps -->
+      <div>
+        <div class="done-box">
+          <div class="check-ico">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#69F0AE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2>Config ready</h2>
+          <p>Download and send to your SAP team — they'll deploy your branded dashboard in minutes.</p>
+          <button class="btn-download" onclick="downloadConfig()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download customer.json
+          </button>
+        </div>
+
+        <div class="deploy-steps">
+          <h4>What happens next</h4>
+          <div class="deploy-step-item">
+            <div class="n">1</div>
+            <div>Email <code>customer.json</code> to <strong style="color:#BDD9FF;">alexandra.coyle@sap.com</strong></div>
+          </div>
+          <div class="deploy-step-item">
+            <div class="n">2</div>
+            <div>SAP team deploys your dashboard on BTP Cloud Foundry (~10 min)</div>
+          </div>
+          <div class="deploy-step-item">
+            <div class="n">3</div>
+            <div>You receive your dashboard URL and XSUAA login credentials</div>
+          </div>
+          <div class="deploy-step-item">
+            <div class="n">4</div>
+            <div>Log in and start adding initiatives, RAID items, contacts, and events</div>
+          </div>
+        </div>
+      </div>
     </div>
+
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(4)">Next →</button>
+      <button class="btn-secondary" onclick="goStep(2)">← Back</button>
+      <button class="btn-download" onclick="downloadConfig()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download customer.json
+      </button>
     </div>
   </div>
 
-  <!-- STEP 4: MILESTONES -->
-  <div class="step-panel card" id="panel-4">
-    <h2>Strategic Milestones</h2>
-    <p class="hint">Add the key milestones for this engagement. These will appear in your dashboard tracker.</p>
-    <table class="ms-table">
-      <thead>
-        <tr>
-          <th>Milestone</th>
-          <th>Due Date</th>
-          <th>Status</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="ms-body"></tbody>
-    </table>
-    <button class="add-row-btn" onclick="addMilestone()">+ Add Milestone</button>
-    <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goStep(3)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(5)">Preview Dashboard →</button>
-    </div>
-  </div>
-
-  <!-- STEP 5: PREVIEW -->
-  <div class="step-panel" id="panel-5">
-    <div class="card" style="margin-bottom:16px">
-      <h2>Your Dashboard Preview</h2>
-      <p class="hint">This is what your One SAP dashboard will look like. Our team will deploy it for your account.</p>
-    </div>
-
-    <div id="preview-panel">
-      <!-- Top bar -->
-      <div class="db-topbar">
-        <div class="db-logo" id="prev-logo-wrap">
-          <span id="prev-initials">CO</span>
-        </div>
-        <div>
-          <div class="db-name" id="prev-name">Your Company</div>
-          <div class="db-sub">One SAP Engagement Dashboard</div>
-        </div>
-        <div class="db-pill">MaxAttention</div>
-      </div>
-
-      <!-- Body -->
-      <div class="db-body">
-        <!-- KPIs -->
-        <div class="kpi-row">
-          <div class="kpi-card">
-            <div class="kpi-label">Health Score</div>
-            <div class="kpi-val" id="prev-health" style="color:#69F0AE">—</div>
-            <div class="kpi-trend">Engagement overall</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Contract Value</div>
-            <div class="kpi-val" id="prev-contract">—</div>
-            <div class="kpi-trend">Active contract</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Days to Renewal</div>
-            <div class="kpi-val" id="prev-renewal">—</div>
-            <div class="kpi-trend">Renewal date</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Open Issues</div>
-            <div class="kpi-val" id="prev-issues" style="color:#FF8A80">—</div>
-            <div class="kpi-trend">Action required</div>
-          </div>
-        </div>
-
-        <!-- Charts -->
-        <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Engagement Health — Monthly Trend</div>
-            <canvas id="prev-chart-line"></canvas>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Milestone Status</div>
-            <canvas id="prev-chart-donut"></canvas>
-          </div>
-        </div>
-
-        <!-- Contacts + Milestones -->
-        <div class="bottom-row">
-          <div class="section-card">
-            <div class="section-title">Key Contacts</div>
-            <div id="prev-contacts"></div>
-          </div>
-          <div class="section-card">
-            <div class="section-title">Milestone Tracker</div>
-            <div id="prev-milestones"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="preview-footer">
-        <p>Ready to go live? Submit your info and the SAP team will deploy your dashboard.</p>
-        <button class="btn-request" onclick="requestDeploy()">Request Deployment →</button>
-      </div>
-    </div>
-
-    <div class="btn-row" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="goStep(4)">← Edit Data</button>
-      <button class="btn btn-primary" onclick="requestDeploy()">Request Deployment →</button>
-    </div>
-  </div>
-
-</div><!-- /wizard -->
-
-<script>
-  // ── State ──
-  let milestones = [];
-  let lineChart  = null;
-  let donutChart = null;
-  let logoData   = '';
-
-  // Load from localStorage
-  (function init() {
-    const saved = localStorage.getItem('onesap_onboard');
-    if (saved) {
-      const d = JSON.parse(saved);
-      ['f-name','f-industry','f-health','f-issues','f-contract','f-renewal','f-ae','f-em',
-       'c1-name','c1-title','c1-email','c2-name','c2-title','c2-email','c3-name','c3-title','c3-email']
-        .forEach(id => { if (d[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = d[id]; } });
-      if (d['f-color-hex']) {
-        document.getElementById('f-color-hex').value = d['f-color-hex'];
-        document.getElementById('f-color-pick').value = d['f-color-hex'];
-      }
-      if (d.logoData) {
-        logoData = d.logoData;
-        document.getElementById('logo-thumb').src = logoData;
-        document.getElementById('logo-preview').style.display = 'flex';
-        document.getElementById('logo-preview').style.alignItems = 'center';
-        document.getElementById('upload-label').textContent = 'Logo uploaded';
-      }
-      milestones = d.milestones || [];
-    }
-    if (!milestones.length) {
-      milestones = [
-        { name: 'Go-Live Phase 1', date: '', status: 'on-track' },
-        { name: 'UAT Sign-off',    date: '', status: 'on-track' },
-        { name: 'Data Migration',  date: '', status: 'at-risk'  },
-      ];
-    }
-    renderMilestoneTable();
-  })();
-
-  function save() {
-    const d = {};
-    ['f-name','f-industry','f-health','f-issues','f-contract','f-renewal','f-ae','f-em',
-     'c1-name','c1-title','c1-email','c2-name','c2-title','c2-email','c3-name','c3-title','c3-email']
-      .forEach(id => { const el = document.getElementById(id); if (el) d[id] = el.value; });
-    d['f-color-hex'] = document.getElementById('f-color-hex').value;
-    d.logoData   = logoData;
-    d.milestones = milestones;
-    localStorage.setItem('onesap_onboard', JSON.stringify(d));
-  }
-
-  function handleLogoUpload(input) {
-    if (!input.files || !input.files[0]) return;
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = e => {
-      logoData = e.target.result;
-      document.getElementById('logo-thumb').src = logoData;
-      document.getElementById('logo-preview').style.display = 'flex';
-      document.getElementById('logo-preview').style.alignItems = 'center';
-      document.getElementById('upload-label').textContent = file.name;
-      save();
+  <script>
+    const state = {
+      name: '',
+      logoBase64: null,
+      color: '#0070F2',
+      services: { ps: false, max: false, cas: false },
+      subServices: {}
     };
-    reader.readAsDataURL(file);
-  }
 
-  function clearLogo() {
-    logoData = '';
-    document.getElementById('f-logo-file').value = '';
-    document.getElementById('logo-preview').style.display = 'none';
-    document.getElementById('upload-label').textContent = 'Choose image…';
-    save();
-  }
-
-  // ── Color sync ──
-  function syncColor(source) {
-    if (source === 'pick') {
-      document.getElementById('f-color-hex').value = document.getElementById('f-color-pick').value;
-    } else {
-      const hex = document.getElementById('f-color-hex').value;
-      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) document.getElementById('f-color-pick').value = hex;
-    }
-    save();
-  }
-
-  // ── Milestones ──
-  function renderMilestoneTable() {
-    const tbody = document.getElementById('ms-body');
-    tbody.innerHTML = milestones.map((m, i) => `
-      <tr>
-        <td><input type="text" value="${esc(m.name)}" placeholder="Milestone name"
-            oninput="milestones[${i}].name=this.value;save()"></td>
-        <td><input type="date" value="${esc(m.date)}"
-            oninput="milestones[${i}].date=this.value;save()" style="width:140px"></td>
-        <td><select onchange="milestones[${i}].status=this.value;save()">
-          <option value="on-track"  ${m.status==='on-track'  ?'selected':''}>On Track</option>
-          <option value="at-risk"   ${m.status==='at-risk'   ?'selected':''}>At Risk</option>
-          <option value="complete"  ${m.status==='complete'  ?'selected':''}>Complete</option>
-        </select></td>
-        <td><button class="del-btn" onclick="delMilestone(${i})">✕</button></td>
-      </tr>`).join('');
-  }
-
-  function addMilestone() {
-    milestones.push({ name: '', date: '', status: 'on-track' });
-    renderMilestoneTable();
-    save();
-  }
-
-  function delMilestone(i) {
-    milestones.splice(i, 1);
-    renderMilestoneTable();
-    save();
-  }
-
-  // ── Step navigation ──
-  let currentStep = 1;
-
-  function goStep(n) {
-    save();
-    document.getElementById('panel-' + currentStep).classList.remove('active');
-    document.querySelectorAll('.step-item').forEach(el => {
-      const s = parseInt(el.dataset.step);
-      el.classList.remove('active','done');
-      if (s < n) el.classList.add('done');
-      else if (s === n) el.classList.add('active');
-    });
-    currentStep = n;
-    document.getElementById('panel-' + n).classList.add('active');
-    if (n === 5) renderPreview();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // ── Preview rendering ──
-  function renderPreview() {
-    const name     = v('f-name')    || 'Your Company';
-    const color    = v('f-color-hex') || '#0057D2';
-    const health   = v('f-health');
-    const contract = v('f-contract') || '—';
-    const renewal  = v('f-renewal');
-    const issues   = v('f-issues');
-
-    // Top bar
-    document.getElementById('prev-name').textContent = name;
-    const initials = name.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    const wrap = document.getElementById('prev-logo-wrap');
-    if (logoData) {
-      wrap.innerHTML = `<img src="${logoData}" alt="" style="height:36px;width:36px;border-radius:6px;object-fit:contain;">`;
-      wrap.style.background = 'transparent';
-    } else {
-      wrap.innerHTML = `<span style="color:${color}">${initials}</span>`;
-      wrap.style.background = color + '22';
-    }
-
-    // KPIs
-    const hVal = parseInt(health) || 0;
-    document.getElementById('prev-health').textContent   = health ? hVal + '/100' : '—';
-    document.getElementById('prev-health').style.color   = hVal >= 70 ? '#69F0AE' : hVal >= 40 ? '#FFD54F' : '#FF8A80';
-    document.getElementById('prev-contract').textContent = contract;
-    document.getElementById('prev-issues').textContent   = issues || '—';
-
-    if (renewal) {
-      const days = Math.round((new Date(renewal) - new Date()) / 86400000);
-      document.getElementById('prev-renewal').textContent = days > 0 ? days + 'd' : 'Expired';
-      document.getElementById('prev-renewal').style.color = days < 60 ? '#FF8A80' : '#fff';
-    } else {
-      document.getElementById('prev-renewal').textContent = '—';
-    }
-
-    // Line chart
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const now = new Date().getMonth();
-    const labels = Array.from({length:6}, (_,i) => months[(now-5+i+12)%12]);
-    const base = hVal || 75;
-    const data  = labels.map((_,i) => Math.min(100, Math.max(0, base - 8 + Math.round(Math.random()*16) + i)));
-    data[data.length-1] = base;
-
-    if (lineChart) lineChart.destroy();
-    lineChart = new Chart(document.getElementById('prev-chart-line'), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          borderColor: color,
-          backgroundColor: color + '22',
-          tension: 0.4,
-          fill: true,
-          pointRadius: 3,
-          pointBackgroundColor: color,
-        }]
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { min: 0, max: 100, ticks: { color:'rgba(255,255,255,0.4)', font:{size:10} }, grid: { color:'rgba(255,255,255,0.06)' } },
-          x: { ticks: { color:'rgba(255,255,255,0.4)', font:{size:10} }, grid: { display: false } }
-        }
+    // Pre-fill account name from URL ?account=
+    (function(){
+      const p = new URLSearchParams(window.location.search).get('account');
+      if (p) {
+        document.getElementById('f-name').value = p;
+        state.name = p;
+        syncPreview();
       }
-    });
+    })();
 
-    // Donut
-    const counts = { complete: 0, 'on-track': 0, 'at-risk': 0 };
-    milestones.forEach(m => { if (counts[m.status] !== undefined) counts[m.status]++; });
-    if (donutChart) donutChart.destroy();
-    donutChart = new Chart(document.getElementById('prev-chart-donut'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Complete','On Track','At Risk'],
-        datasets: [{
-          data: [counts.complete, counts['on-track'], counts['at-risk']],
-          backgroundColor: ['#69F0AE', color, '#FF8A80'],
-          borderWidth: 0,
-        }]
-      },
-      options: {
-        plugins: { legend: { position: 'bottom', labels: { color:'rgba(255,255,255,0.6)', boxWidth:10, font:{size:10} } } },
-        cutout: '65%'
+    // ── Color ──
+    function setColor(hex) {
+      state.color = hex;
+      document.getElementById('f-color').value = hex;
+      document.getElementById('f-hex').value = hex;
+      syncPreview();
+    }
+    function onColorPicker() {
+      const v = document.getElementById('f-color').value;
+      state.color = v;
+      document.getElementById('f-hex').value = v;
+      syncPreview();
+    }
+    function onHexInput() {
+      const v = document.getElementById('f-hex').value;
+      if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+        state.color = v;
+        document.getElementById('f-color').value = v;
+        syncPreview();
       }
-    });
+    }
 
-    // Contacts
-    const contacts = [
-      { name: v('c1-name'), title: v('c1-title'), role: 'Executive Sponsor' },
-      { name: v('c2-name'), title: v('c2-title'), role: 'Project Owner' },
-      { name: v('c3-name'), title: v('c3-title'), role: 'Technical Lead' },
-    ].filter(c => c.name);
-    const colors = [color, '#9C6ADE', '#47B8A8'];
-    document.getElementById('prev-contacts').innerHTML = contacts.length
-      ? contacts.map((c,i) => `
-          <div class="contact-item">
-            <div class="contact-avatar" style="background:${colors[i%3]}22;color:${colors[i%3]}">
-              ${c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
-            </div>
-            <div class="contact-info">
-              <div class="contact-name">${esc(c.name)}</div>
-              <div class="contact-role">${esc(c.title||c.role)}</div>
-            </div>
-          </div>`).join('')
-      : '<p style="font-size:12px;color:rgba(255,255,255,0.3)">No contacts added yet</p>';
+    // ── Logo ──
+    function handleLogo(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        state.logoBase64 = e.target.result;
+        document.getElementById('logo-preview').src = e.target.result;
+        document.getElementById('logo-preview').style.display = 'block';
+        document.getElementById('upload-ico').style.display = 'none';
+        document.getElementById('upload-hint').style.display = 'none';
+        document.getElementById('clear-logo').style.display = 'block';
+        syncPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+    function clearLogo() {
+      state.logoBase64 = null;
+      document.getElementById('logo-preview').style.display = 'none';
+      document.getElementById('logo-preview').src = '';
+      document.getElementById('upload-ico').style.display = '';
+      document.getElementById('upload-hint').style.display = '';
+      document.getElementById('clear-logo').style.display = 'none';
+      document.getElementById('logo-file').value = '';
+      syncPreview();
+    }
 
-    // Milestones
-    const msToShow = milestones.slice(0, 5);
-    document.getElementById('prev-milestones').innerHTML = msToShow.length
-      ? msToShow.map(m => `
-          <div class="ms-row-preview">
-            <span class="ms-status ${m.status}">${m.status === 'on-track' ? 'On Track' : m.status === 'at-risk' ? 'At Risk' : 'Complete'}</span>
-            <span class="ms-name">${esc(m.name || '—')}</span>
-            <span class="ms-date">${m.date ? new Date(m.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : ''}</span>
-          </div>`).join('')
-      : '<p style="font-size:12px;color:rgba(255,255,255,0.3)">No milestones added yet</p>';
-  }
+    // ── Services ──
+    function toggleSvc(key) {
+      state.services[key] = !state.services[key];
+      document.getElementById('check-' + key).classList.toggle('checked', state.services[key]);
+      document.getElementById('sub-' + key).classList.toggle('open', state.services[key]);
+      updateConfigPreview();
+      updateTabsPreview();
+    }
+    function toggleSubSvc(key) {
+      state.subServices[key] = !state.subServices[key];
+      document.getElementById('check-' + key).classList.toggle('checked', state.subServices[key]);
+      updateConfigPreview();
+    }
 
-  function requestDeploy() {
-    save();
-    const name = v('f-name') || 'your company';
-    alert('Thanks! The SAP MaxAttention team will reach out to deploy the One SAP dashboard for ' + name + '.\n\nContact: alexandra.coyle@sap.com');
-  }
+    // ── Preview sync ──
+    function syncPreview() {
+      state.name = document.getElementById('f-name').value.trim();
+      const name = state.name || 'Your Company';
+      const color = state.color;
 
-  function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-</script>
+      // Step 1 preview
+      document.getElementById('prev-header').style.background = color;
+      document.getElementById('prev-title').textContent = 'OneSAP at ' + name;
+      document.getElementById('prev-tab-active').style.borderBottomColor = color;
+      document.getElementById('bar-accent').style.background = color;
+
+      const pl = document.getElementById('prev-logo');
+      const ph = document.getElementById('prev-logo-ph');
+      if (state.logoBase64) {
+        pl.src = state.logoBase64; pl.style.display = 'block'; ph.style.display = 'none';
+      } else {
+        pl.style.display = 'none'; ph.style.display = '';
+      }
+
+      // Step 3 preview
+      document.getElementById('prev2-header').style.background = color;
+      document.getElementById('prev2-title').textContent = 'OneSAP at ' + name;
+      const pl2 = document.getElementById('prev2-logo');
+      const ph2 = document.getElementById('prev2-logo-ph');
+      if (state.logoBase64) {
+        pl2.src = state.logoBase64; pl2.style.display = 'block'; ph2.style.display = 'none';
+      } else {
+        pl2.style.display = 'none'; ph2.style.display = '';
+      }
+
+      renderStep3Tabs();
+      updateConfigPreview();
+    }
+
+    function updateTabsPreview() {
+      const optional = [];
+      if (state.services.ps)  optional.push('Professional Services');
+      if (state.services.max) optional.push('MaxAttention');
+      if (state.services.cas) optional.push('Cloud App Services');
+      const c = document.getElementById('tabs-preview');
+      c.innerHTML = optional.map(t =>
+        `<div style="background:rgba(0,112,242,.18);border:1px solid rgba(0,112,242,.4);
+          border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;color:#BDD9FF;">${t}</div>`
+      ).join('') || '<div style="font-size:11px;color:rgba(255,255,255,.25);">No optional tabs selected yet</div>';
+      renderStep3Tabs();
+    }
+
+    function renderStep3Tabs() {
+      const color = state.color;
+      const tabs = ['Summary'];
+      if (state.services.ps) tabs.push('PS');
+      if (state.services.max) tabs.push('MAX');
+      if (state.services.cas) tabs.push('CAS');
+      tabs.push('RAID', 'Events', 'CSM');
+      const c = document.getElementById('prev2-tabs');
+      if (c) c.innerHTML = tabs.map((t,i) =>
+        `<div class="dash-mock-tab${i===0?' act':''}" style="${i===0?'border-bottom-color:'+color+';color:#fff':''}">${t}</div>`
+      ).join('');
+    }
+
+    function buildConfig() {
+      const name = state.name || 'Account';
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      const services = Object.keys(state.services).filter(k => state.services[k]);
+      const subs = Object.keys(state.subServices).filter(k => state.subServices[k]);
+      const cfg = {
+        name: name,
+        short_name: slug,
+        title: `OneSAP at ${name} - Account Level Dashboard`,
+        accent_color: state.color,
+        export_prefix: `${slug.toUpperCase().replace(/-/g,'_')}_OneSAP`,
+        services: services,
+        sub_services: subs,
+        admin_emails: ['alexandra.coyle@sap.com'],
+        dashboard_url: `https://ne-${slug}-app.cfapps.us10.hana.ondemand.com`
+      };
+      if (state.logoBase64) cfg.logo_base64 = state.logoBase64;
+      return cfg;
+    }
+
+    function updateConfigPreview() {
+      const cfg = buildConfig();
+      const display = Object.assign({}, cfg);
+      if (display.logo_base64) display.logo_base64 = '[base64 image data]';
+      document.getElementById('config-preview').textContent = JSON.stringify(display, null, 2);
+    }
+
+    function downloadConfig() {
+      const cfg = buildConfig();
+      const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (cfg.short_name || 'account') + '-customer.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Navigation ──
+    function goStep(n) {
+      if (n >= 2 && !document.getElementById('f-name').value.trim()) {
+        const el = document.getElementById('f-name');
+        el.focus();
+        el.style.borderColor = '#FF8A80';
+        setTimeout(() => el.style.borderColor = '', 1800);
+        return;
+      }
+      [1,2,3].forEach(i => {
+        document.getElementById('page-'+i).classList.toggle('active', i===n);
+        const step = document.getElementById('s'+i);
+        step.classList.remove('active','done');
+        if (i < n) step.classList.add('done');
+        else if (i === n) step.classList.add('active');
+        const dot = step.querySelector('.dot');
+        dot.textContent = i < n ? '✓' : String(i);
+        if (i < 3) document.getElementById('sl'+i).classList.toggle('done', i < n);
+      });
+      if (n === 3) syncPreview();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Init ──
+    updateTabsPreview();
+    updateConfigPreview();
+  </script>
 </body>
 </html>

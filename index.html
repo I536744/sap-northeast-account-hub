@@ -220,6 +220,7 @@
     let selected    = null;
     let activeIdx   = -1;
     let isOpen      = false;
+    let currentMatches = [];  // holds current rendered accounts by index
 
     Promise.all([
       fetch('./accounts.json').then(r => r.json()),
@@ -286,36 +287,38 @@
 
     function renderList(q) {
       const lower = q.toLowerCase();
-      let matches = q.length === 0
+      currentMatches = q.length === 0
         ? allAccounts.slice(0, 50)
         : allAccounts.filter(a => a.name.toLowerCase().includes(lower)).slice(0, 50);
 
-      // put LIVE accounts first
-      matches.sort((a, b) => {
+      currentMatches.sort((a, b) => {
         const aLive = customers.some(c => c.name.toLowerCase() === a.name.toLowerCase()) ? 0 : 1;
         const bLive = customers.some(c => c.name.toLowerCase() === b.name.toLowerCase()) ? 0 : 1;
         return aLive - bLive;
       });
 
-      if (!matches.length) {
+      if (!currentMatches.length) {
         ddList.innerHTML = '';
         ddEmpty.style.display = 'block';
         return;
       }
       ddEmpty.style.display = 'none';
 
-      ddList.innerHTML = matches.map((a, i) => {
-        const nameHtml = q
-          ? a.name.replace(new RegExp(`(${escRe(q)})`, 'gi'), '<mark>$1</mark>')
-          : a.name;
+      ddList.innerHTML = currentMatches.map((a, i) => {
+        const safeName = escHtml(a.name);
+        const nameHtml = q ? safeName.replace(new RegExp(`(${escRe(q)})`, 'gi'), '<mark>$1</mark>') : safeName;
         const live = customers.find(c => c.name.toLowerCase() === a.name.toLowerCase());
-        const sub  = a.parent && a.parent !== a.name ? a.parent : '';
-        return `<div class="dd-item" data-idx="${i}" onclick="selectAccount(${JSON.stringify(a).replace(/"/g,'&quot;')})">
+        const sub  = a.parent && a.parent !== a.name ? escHtml(a.parent) : '';
+        return `<div class="dd-item" data-idx="${i}">
           <span class="item-name">${nameHtml}</span>
           ${sub ? `<span class="item-sub">${sub}</span>` : ''}
           ${live ? '<span class="live-badge">● LIVE</span>' : ''}
         </div>`;
       }).join('');
+
+      ddList.querySelectorAll('.dd-item').forEach((el, i) => {
+        el.addEventListener('click', () => selectAccount(currentMatches[i]));
+      });
     }
 
     function highlightItem(items) {
@@ -341,11 +344,11 @@
         msg.textContent = 'Opening ' + live.name + '…';
         setTimeout(() => { window.location.href = live.url; }, 250);
       } else {
-        msg.className = 'error';
-        msg.textContent = 'No dashboard deployed yet for ' + selected.name + '.';
+        window.location.href = './onboard.html?account=' + encodeURIComponent(selected.name);
       }
     }
 
+    function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   </script>
 </body>
