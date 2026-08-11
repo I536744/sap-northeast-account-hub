@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>One SAP — Account Hub</title>
   <style>
+    @font-face { font-family: "72"; font-weight: 300; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2"); }
+    @font-face { font-family: "72"; font-weight: 400; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2"); }
+    @font-face { font-family: "72"; font-weight: 700; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2"); }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: "72", "SAP72", Arial, sans-serif;
+      font-family: "72", Arial, sans-serif;
       min-height: 100vh;
       background: linear-gradient(135deg, #00144A 0%, #002A86 60%, #0070F2 100%);
       background-attachment: fixed;
@@ -54,7 +58,7 @@
     }
     #dd-btn.has-value { color: #fff; }
     #dd-btn:hover, #dd-btn.open {
-      border-color: #4CB1FF;
+      border-color: #0070F2;
       background: rgba(255,255,255,0.15);
     }
     #dd-btn .chevron {
@@ -112,14 +116,14 @@
       gap: 8px;
     }
     .dd-item:last-child { border-bottom: none; }
-    .dd-item:hover, .dd-item.active { background: rgba(76,177,255,0.18); color: #fff; }
+    .dd-item:hover, .dd-item.active { background: rgba(0,112,242,0.2); color: #fff; }
     .dd-item .item-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dd-item .item-sub { font-size: 11px; color: rgba(255,255,255,0.38); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
-    .dd-item mark { background: none; color: #4CB1FF; font-weight: 700; }
+    .dd-item mark { background: none; color: #BDD9FF; font-weight: 700; }
     .live-badge {
       font-size: 10px;
       font-weight: 700;
-      color: #4CB1FF;
+      color: #BDD9FF;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -135,40 +139,42 @@
     /* ── CTA button ── */
     #enter-btn {
       width: 100%;
-      background: #1677FF;
+      background: #0070F2;
       color: #fff;
       border: none;
       border-radius: 10px;
       padding: 14px 32px;
       font-size: 15px;
       font-weight: 700;
+      font-family: "72", Arial, sans-serif;
       cursor: pointer;
       letter-spacing: 0.2px;
-      box-shadow: 0 4px 20px rgba(22,119,255,0.5);
+      box-shadow: 0 4px 20px rgba(0,112,242,0.45);
       transition: background .15s, box-shadow .15s, opacity .15s;
     }
-    #enter-btn:hover:not(:disabled) { background: #0958d9; box-shadow: 0 6px 24px rgba(22,119,255,0.65); }
+    #enter-btn:hover:not(:disabled) { background: #0040B0; box-shadow: 0 6px 24px rgba(0,112,242,0.6); }
     #enter-btn:disabled { opacity: 0.3; cursor: default; box-shadow: none; }
 
     #create-btn {
       display: block;
       width: 100%;
       padding: 13px 20px;
-      background: rgba(255,255,255,0.08);
-      border: 1.5px solid rgba(255,255,255,0.3);
+      background: rgba(0,112,242,0.12);
+      border: 1.5px solid rgba(0,112,242,0.5);
       border-radius: 10px;
-      color: #fff;
+      color: #BDD9FF;
       font-size: 14px;
       font-weight: 700;
+      font-family: "72", Arial, sans-serif;
       text-align: center;
       text-decoration: none;
       letter-spacing: 0.2px;
       transition: background .15s, border-color .15s;
     }
     #create-btn:hover {
-      background: rgba(76,177,255,0.15);
-      border-color: #4CB1FF;
-      color: #4CB1FF;
+      background: rgba(0,112,242,0.25);
+      border-color: #0070F2;
+      color: #fff;
     }
 
     #msg { font-size: 12px; min-height: 18px; text-align: center; color: rgba(255,255,255,0.5); }
@@ -203,7 +209,7 @@
 
     <button id="enter-btn" onclick="goToDashboard()" disabled>Go to Dashboard →</button>
     <div id="msg"></div>
-    <a href="./onboard.html" id="create-btn">
+    <a href="https://ne-onesap-template.cfapps.us10.hana.ondemand.com" id="create-btn">
       + Add data to create dashboard for your account
     </a>
   </div>

@@ -6,12 +6,17 @@
   <title>One SAP — Create Your Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
+    @font-face { font-family: "72"; font-weight: 300; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2"); }
+    @font-face { font-family: "72"; font-weight: 400; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2"); }
+    @font-face { font-family: "72"; font-weight: 700; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2"); }
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --accent: #0070F2;
-      --accent-light: #4CB1FF;
-      --bg: #00144A;
+      --accent-dark: #0040B0;
+      --accent-light: #BDD9FF;
+      --bg-deep: #00144A;
+      --bg-mid: #002A86;
     }
 
     body {
@@ -72,10 +77,10 @@
       font-size: 12px; font-weight: 700;
       position: relative; z-index: 1;
     }
-    .step-item.done .step-dot { background: var(--accent-light); border-color: var(--accent-light); color: #00144A; }
-    .step-item.active .step-dot { border-color: var(--accent-light); color: var(--accent-light); }
+    .step-item.done .step-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .step-item.active .step-dot { border-color: var(--accent); color: var(--accent); }
     .step-label { font-size: 11px; color: rgba(255,255,255,0.45); text-align: center; }
-    .step-item.active .step-label { color: #fff; }
+    .step-item.active .step-label { color: #fff; font-weight: 700; }
     .step-item.done .step-label { color: var(--accent-light); }
 
     /* ── CARD ── */
@@ -164,7 +169,8 @@
       transition: opacity .15s;
     }
     .btn:hover { opacity: 0.85; }
-    .btn-primary { background: var(--accent-light); color: #00144A; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-dark); }
     .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
     .btn:disabled { opacity: 0.3; cursor: default; }
 
@@ -272,7 +278,8 @@
       gap: 12px;
     }
     .preview-footer p { font-size: 13px; color: rgba(255,255,255,0.5); }
-    .btn-request { background: var(--accent-light); color: #00144A; padding: 10px 24px; border-radius: 9px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; }
+    .btn-request { background: var(--accent); color: #fff; padding: 10px 24px; border-radius: 9px; font-size: 14px; font-weight: 700; font-family: "72", Arial, sans-serif; border: none; cursor: pointer; }
+    .btn-request:hover { background: var(--accent-dark); }
 
     @media(max-width:600px){
       .form-grid { grid-template-columns: 1fr; }
