@@ -94,7 +94,7 @@
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field.span2 { grid-column: span 2; }
     label { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 600; letter-spacing: .4px; }
-    input[type=text], input[type=email], input[type=number], input[type=date], input[type=url], select, textarea {
+    input[type=text], input[type=email], input[type=number], input[type=date], select, textarea {
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.18);
       border-radius: 8px;
@@ -110,7 +110,17 @@
     select option { background: #001A5C; color: #fff; }
     textarea { resize: vertical; min-height: 80px; }
 
-    .color-row { display: flex; align-items: center; gap: 12px; }
+    .upload-row { display: flex; align-items: center; gap: 12px; }
+    .upload-btn {
+      display: inline-flex; align-items: center;
+      padding: 10px 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      font-size: 14px; color: rgba(255,255,255,0.7);
+      cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .upload-btn:hover { border-color: var(--accent-light); background: rgba(255,255,255,0.12); color: #fff; }
     input[type=color] {
       width: 44px; height: 38px;
       border-radius: 8px;
@@ -316,8 +326,17 @@
         <input type="text" id="f-name" placeholder="e.g. Pfizer" oninput="save()">
       </div>
       <div class="field span2">
-        <label>LOGO URL <span style="font-weight:400;color:rgba(255,255,255,0.3)">(optional — paste a public image URL)</span></label>
-        <input type="url" id="f-logo" placeholder="https://example.com/logo.png" oninput="save()">
+        <label>COMPANY LOGO <span style="font-weight:400;color:rgba(255,255,255,0.3)">(optional)</span></label>
+        <div class="upload-row">
+          <label class="upload-btn" for="f-logo-file">
+            <span id="upload-label">Choose image…</span>
+          </label>
+          <input type="file" id="f-logo-file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+          <div id="logo-preview" style="display:none">
+            <img id="logo-thumb" src="" alt="" style="height:36px;border-radius:6px;object-fit:contain;background:rgba(255,255,255,0.08);padding:4px;">
+            <button type="button" onclick="clearLogo()" style="background:none;border:none;color:rgba(255,100,100,0.7);cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">✕</button>
+          </div>
+        </div>
       </div>
       <div class="field">
         <label>INDUSTRY</label>
@@ -518,18 +537,26 @@
   let milestones = [];
   let lineChart  = null;
   let donutChart = null;
+  let logoData   = '';
 
   // Load from localStorage
   (function init() {
     const saved = localStorage.getItem('onesap_onboard');
     if (saved) {
       const d = JSON.parse(saved);
-      ['f-name','f-logo','f-industry','f-health','f-issues','f-contract','f-renewal','f-ae','f-em',
+      ['f-name','f-industry','f-health','f-issues','f-contract','f-renewal','f-ae','f-em',
        'c1-name','c1-title','c1-email','c2-name','c2-title','c2-email','c3-name','c3-title','c3-email']
         .forEach(id => { if (d[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = d[id]; } });
       if (d['f-color-hex']) {
         document.getElementById('f-color-hex').value = d['f-color-hex'];
         document.getElementById('f-color-pick').value = d['f-color-hex'];
+      }
+      if (d.logoData) {
+        logoData = d.logoData;
+        document.getElementById('logo-thumb').src = logoData;
+        document.getElementById('logo-preview').style.display = 'flex';
+        document.getElementById('logo-preview').style.alignItems = 'center';
+        document.getElementById('upload-label').textContent = 'Logo uploaded';
       }
       milestones = d.milestones || [];
     }
@@ -545,12 +572,36 @@
 
   function save() {
     const d = {};
-    ['f-name','f-logo','f-industry','f-health','f-issues','f-contract','f-renewal','f-ae','f-em',
+    ['f-name','f-industry','f-health','f-issues','f-contract','f-renewal','f-ae','f-em',
      'c1-name','c1-title','c1-email','c2-name','c2-title','c2-email','c3-name','c3-title','c3-email']
       .forEach(id => { const el = document.getElementById(id); if (el) d[id] = el.value; });
     d['f-color-hex'] = document.getElementById('f-color-hex').value;
+    d.logoData   = logoData;
     d.milestones = milestones;
     localStorage.setItem('onesap_onboard', JSON.stringify(d));
+  }
+
+  function handleLogoUpload(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      logoData = e.target.result;
+      document.getElementById('logo-thumb').src = logoData;
+      document.getElementById('logo-preview').style.display = 'flex';
+      document.getElementById('logo-preview').style.alignItems = 'center';
+      document.getElementById('upload-label').textContent = file.name;
+      save();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearLogo() {
+    logoData = '';
+    document.getElementById('f-logo-file').value = '';
+    document.getElementById('logo-preview').style.display = 'none';
+    document.getElementById('upload-label').textContent = 'Choose image…';
+    save();
   }
 
   // ── Color sync ──
@@ -615,7 +666,6 @@
   // ── Preview rendering ──
   function renderPreview() {
     const name     = v('f-name')    || 'Your Company';
-    const logoUrl  = v('f-logo');
     const color    = v('f-color-hex') || '#0057D2';
     const health   = v('f-health');
     const contract = v('f-contract') || '—';
@@ -626,9 +676,9 @@
     document.getElementById('prev-name').textContent = name;
     const initials = name.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const wrap = document.getElementById('prev-logo-wrap');
-    if (logoUrl) {
-      wrap.innerHTML = `<img src="${esc(logoUrl)}" onerror="this.style.display='none'" alt="">`;
-      wrap.style.background = color + '22';
+    if (logoData) {
+      wrap.innerHTML = `<img src="${logoData}" alt="" style="height:36px;width:36px;border-radius:6px;object-fit:contain;">`;
+      wrap.style.background = 'transparent';
     } else {
       wrap.innerHTML = `<span style="color:${color}">${initials}</span>`;
       wrap.style.background = color + '22';
@@ -654,7 +704,7 @@
     const now = new Date().getMonth();
     const labels = Array.from({length:6}, (_,i) => months[(now-5+i+12)%12]);
     const base = hVal || 75;
-    const data  = labels.map((_,i) => Math.min(100, Math.max(0, base - 8 + Math.round(Math.random()*16) + i));
+    const data  = labels.map((_,i) => Math.min(100, Math.max(0, base - 8 + Math.round(Math.random()*16) + i)));
     data[data.length-1] = base;
 
     if (lineChart) lineChart.destroy();

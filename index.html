@@ -148,6 +148,27 @@
     #enter-btn:hover:not(:disabled) { opacity: 0.88; }
     #enter-btn:disabled { opacity: 0.35; cursor: default; }
 
+    #create-btn {
+      display: block;
+      width: 100%;
+      padding: 13px 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      transition: background .15s, border-color .15s;
+    }
+    #create-btn:hover {
+      background: rgba(76,177,255,0.15);
+      border-color: #4CB1FF;
+      color: #4CB1FF;
+    }
+
     #msg { font-size: 12px; min-height: 18px; text-align: center; color: rgba(255,255,255,0.5); }
     #msg.error { color: #FF8A80; }
     #msg.ok { color: #69F0AE; }
@@ -180,8 +201,8 @@
 
     <button id="enter-btn" onclick="goToDashboard()" disabled>Go to Dashboard →</button>
     <div id="msg"></div>
-    <a href="./onboard.html" style="display:block;text-align:center;color:rgba(255,255,255,0.55);font-size:13px;text-decoration:none;margin-top:4px;transition:color .15s" onmouseover="this.style.color='#4CB1FF'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">
-      + Create your account dashboard
+    <a href="./onboard.html" id="create-btn">
+      + Add data to create dashboard for your account
     </a>
   </div>
 
