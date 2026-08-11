@@ -135,18 +135,20 @@
     /* ── CTA button ── */
     #enter-btn {
       width: 100%;
-      background: #4CB1FF;
-      color: #00144A;
+      background: #1677FF;
+      color: #fff;
       border: none;
       border-radius: 10px;
-      padding: 13px 32px;
-      font-size: 14px;
+      padding: 14px 32px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity .15s;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 20px rgba(22,119,255,0.5);
+      transition: background .15s, box-shadow .15s, opacity .15s;
     }
-    #enter-btn:hover:not(:disabled) { opacity: 0.88; }
-    #enter-btn:disabled { opacity: 0.35; cursor: default; }
+    #enter-btn:hover:not(:disabled) { background: #0958d9; box-shadow: 0 6px 24px rgba(22,119,255,0.65); }
+    #enter-btn:disabled { opacity: 0.3; cursor: default; box-shadow: none; }
 
     #create-btn {
       display: block;
