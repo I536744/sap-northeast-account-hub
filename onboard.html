@@ -467,23 +467,23 @@
         <!-- ── Tab selection ── -->
         <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Dashboard Tabs</div>
         <div class="tabs-box">
-          <div class="always-on">Always on: <strong>Summary · RAID Log · CSM Contacts · Events</strong></div>
+          <div class="always-on">Always on: <strong>Summary · Events</strong></div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <div class="svc-sub-item" onclick="toggleTab('tab-ps')">
-              <div class="sub-check checked" id="check-tab-ps"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <span>Professional Services</span>
-            </div>
-            <div class="svc-sub-item" onclick="toggleTab('tab-max')">
-              <div class="sub-check checked" id="check-tab-max"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <span>MaxAttention</span>
-            </div>
-            <div class="svc-sub-item" onclick="toggleTab('tab-cas')">
-              <div class="sub-check checked" id="check-tab-cas"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <span>Cloud Application Services</span>
-            </div>
             <div class="svc-sub-item" onclick="toggleTab('tab-opp')">
               <div class="sub-check checked" id="check-tab-opp"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span>Opportunities &amp; Roadmap</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-csm')">
+              <div class="sub-check checked" id="check-tab-csm"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>CSM Contacts</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-onboard')">
+              <div class="sub-check checked" id="check-tab-onboard"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>Onboarding</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-raid')">
+              <div class="sub-check checked" id="check-tab-raid"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>RAID Log</span>
             </div>
           </div>
         </div>
@@ -497,7 +497,7 @@
             <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tabs based on your selections:</div>
             <div id="tabs-preview"></div>
             <div style="margin-top:12px;font-size:11px;color:#AAA;line-height:1.6;">
-              Always included: Summary · RAID Log · CSM Contacts · Events
+              Always included: Summary · Events
             </div>
           </div>
         </div>
@@ -608,7 +608,7 @@
       color: '#0057D2',
       services: { ps: false, max: false, cas: false, ea: false },
       subServices: {},
-      tabs: { 'tab-ps': true, 'tab-max': true, 'tab-cas': true, 'tab-opp': true }
+      tabs: { 'tab-opp': true, 'tab-csm': true, 'tab-onboard': true, 'tab-raid': true }
     };
 
     // Pre-fill account name from URL ?account=
@@ -651,50 +651,19 @@
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          // Draw to canvas and strip near-white / near-light background
+          // Draw logo as-is (no background removal — keeps colors correct)
           const canvas = document.createElement('canvas');
           canvas.width  = img.naturalWidth;
           canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          try {
-            const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const d  = id.data;
-            // Sample corners to detect background color (usually white or light grey)
-            function sampleCorner(x, y) {
-              const i = (y * canvas.width + x) * 4;
-              return [d[i], d[i+1], d[i+2]];
-            }
-            const corners = [
-              sampleCorner(0, 0),
-              sampleCorner(canvas.width - 1, 0),
-              sampleCorner(0, canvas.height - 1),
-              sampleCorner(canvas.width - 1, canvas.height - 1)
-            ];
-            // Average background color
-            const bg = corners.reduce((a, c) => [a[0]+c[0], a[1]+c[1], a[2]+c[2]], [0,0,0])
-                             .map(v => Math.round(v / 4));
-            // Only remove if background is light (sum > 600)
-            if (bg[0] + bg[1] + bg[2] > 600) {
-              const tol = 40;
-              for (let i = 0; i < d.length; i += 4) {
-                if (Math.abs(d[i]-bg[0]) < tol &&
-                    Math.abs(d[i+1]-bg[1]) < tol &&
-                    Math.abs(d[i+2]-bg[2]) < tol) {
-                  d[i+3] = 0; // transparent
-                }
-              }
-              ctx.putImageData(id, 0, 0);
-            }
-          } catch(e) { /* cross-origin or security error — use original */ }
+          canvas.getContext('2d').drawImage(img, 0, 0);
           state.logoBase64 = canvas.toDataURL('image/png');
-          // Compressed version for URL param (max 180×90, JPEG 0.5 ≈ 2–4 KB)
-          const cw = Math.min(canvas.width, 180);
-          const ch = Math.round(canvas.height * (cw / canvas.width));
+          // Compressed version for URL param (max 180×90, JPEG 0.7)
+          const cw = Math.min(img.naturalWidth, 180);
+          const ch = Math.round(img.naturalHeight * (cw / img.naturalWidth));
           const cc = document.createElement('canvas');
           cc.width = cw; cc.height = ch;
-          cc.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, cw, ch);
-          state.logoCompressed = cc.toDataURL('image/jpeg', 0.5);
+          cc.getContext('2d').drawImage(img, 0, 0, cw, ch);
+          state.logoCompressed = cc.toDataURL('image/jpeg', 0.7);
           showLogoPreview(state.logoBase64);
         };
         img.src = e.target.result;
@@ -798,10 +767,10 @@
 
     function updateTabsPreview() {
       const TAB_LABELS = {
-        'tab-ps': 'Professional Services',
-        'tab-max': 'MaxAttention',
-        'tab-cas': 'Cloud App Services',
-        'tab-opp': 'Opportunities & Roadmap'
+        'tab-opp':     'Opportunities & Roadmap',
+        'tab-csm':     'CSM Contacts',
+        'tab-onboard': 'Onboarding',
+        'tab-raid':    'RAID Log'
       };
       const selected = Object.keys(state.tabs).filter(k => state.tabs[k]);
       const c = document.getElementById('tabs-preview');
@@ -814,12 +783,15 @@
     function renderStep3Tabs() {
       const color = state.color;
       const tabs = ['Summary'];
-      if (state.services.ps  && state.tabs['tab-ps'])  tabs.push('PS');
-      if (state.services.max && state.tabs['tab-max']) tabs.push('MAX');
-      if (state.services.cas && state.tabs['tab-cas']) tabs.push('CAS');
-      if (state.services.ea)                           tabs.push('EA');
-      if (state.tabs['tab-opp'])                       tabs.push('Opp');
-      tabs.push('RAID', 'Events', 'CSM');
+      if (state.services.ps)              tabs.push('PS');
+      if (state.services.max)             tabs.push('MAX');
+      if (state.services.cas)             tabs.push('CAS');
+      if (state.services.ea)              tabs.push('EA');
+      if (state.tabs['tab-opp'])          tabs.push('Opp');
+      if (state.tabs['tab-csm'])          tabs.push('CSM');
+      if (state.tabs['tab-onboard'])      tabs.push('Onboarding');
+      if (state.tabs['tab-raid'])         tabs.push('RAID');
+      tabs.push('Events');
       const c = document.getElementById('prev2-tabs');
       if (c) c.innerHTML = tabs.map((t,i) =>
         `<div class="dash-mock-tab${i===0?' act':''}" style="${i===0?'border-bottom-color:'+color+';color:#fff':''}">${t}</div>`
@@ -865,13 +837,15 @@
     function buildBtpLink() {
       const name  = state.name || 'Account';
       const color = state.color.replace('#', '');
-      const tabs = [];
-      if (state.services.ps  && state.tabs['tab-ps'])  tabs.push('ps');
-      if (state.services.max && state.tabs['tab-max']) tabs.push('max');
-      if (state.services.cas && state.tabs['tab-cas']) tabs.push('cas');
-      if (state.services.ea)                           tabs.push('ea');
-      if (state.tabs['tab-opp'])                       tabs.push('opp');
-      tabs.push('raid', 'events', 'csm');
+      const tabs = ['summary', 'events'];
+      if (state.services.ps)          tabs.push('ps');
+      if (state.services.max)         tabs.push('max');
+      if (state.services.cas)         tabs.push('cas');
+      if (state.services.ea)          tabs.push('ea');
+      if (state.tabs['tab-opp'])      tabs.push('opp');
+      if (state.tabs['tab-csm'])      tabs.push('csm');
+      if (state.tabs['tab-onboard'])  tabs.push('onboard');
+      if (state.tabs['tab-raid'])     tabs.push('raid');
       const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
       const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
       if (state.logoCompressed) params.set('logo', state.logoCompressed);
