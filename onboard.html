@@ -567,7 +567,7 @@
           </div>
         </div>
 
-        <a id="open-dashboard-btn" href="#" target="_blank" class="btn-download" style="display:flex;text-decoration:none;margin-bottom:14px;">
+        <a id="open-dashboard-btn" href="#" onclick="openDashboard();return false;" target="_blank" class="btn-download" style="display:flex;text-decoration:none;margin-bottom:14px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Open Dashboard
         </a>
@@ -592,7 +592,7 @@
 
     <div class="btn-row">
       <button class="btn-secondary" onclick="goStep(2)">← Back</button>
-      <a id="open-dashboard-btn2" href="#" target="_blank" class="btn-download" style="text-decoration:none;">
+      <a id="open-dashboard-btn2" href="#" onclick="openDashboard();return false;" target="_blank" class="btn-download" style="text-decoration:none;">
         Open Dashboard →
       </a>
     </div>
@@ -657,8 +657,8 @@
           canvas.height = img.naturalHeight;
           canvas.getContext('2d').drawImage(img, 0, 0);
           state.logoBase64 = canvas.toDataURL('image/png');
-          // Full-quality PNG for both preview and dashboard — same as what you see in preview
-          const cw = Math.min(img.naturalWidth, 400);
+          // JPEG with white bg fill — sharp enough at 160px, small enough to fit in URL
+          const cw = Math.min(img.naturalWidth, 160);
           const ch = Math.round(img.naturalHeight * (cw / img.naturalWidth));
           const cc = document.createElement('canvas');
           cc.width = cw; cc.height = ch;
@@ -666,7 +666,7 @@
           ctx2.fillStyle = '#ffffff';
           ctx2.fillRect(0, 0, cw, ch);
           ctx2.drawImage(img, 0, 0, cw, ch);
-          state.logoCompressed = cc.toDataURL('image/png');
+          state.logoCompressed = cc.toDataURL('image/jpeg', 0.9);
           state.logoBase64 = state.logoCompressed;
           showLogoPreview(state.logoBase64);
         };
@@ -754,15 +754,10 @@
         pl2.style.display = 'none'; ph2.style.display = '';
       }
 
-      // Step 3 BTP link + heading
-      const btpLink = buildBtpLink();
+      // Step 3 BTP link + heading (buttons now use openDashboard() onclick, no href needed)
       const cleanUrl = getCleanUrl();
       const linkEl = document.getElementById('btp-link-text');
       if (linkEl) linkEl.textContent = cleanUrl;
-      const openBtn  = document.getElementById('open-dashboard-btn');
-      const openBtn2 = document.getElementById('open-dashboard-btn2');
-      if (openBtn)  openBtn.href  = btpLink;
-      if (openBtn2) openBtn2.href = btpLink;
       const nameEl = document.getElementById('step3-name');
       if (nameEl) nameEl.textContent = name || 'Your Company';
 
@@ -839,10 +834,9 @@
       el.textContent = JSON.stringify(display, null, 2);
     }
 
-    function buildBtpLink() {
+    function buildBtpParams() {
       const name  = state.name || 'Account';
       const color = state.color.replace('#', '');
-      const slug  = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       const tabs = ['summary', 'events'];
       if (state.services.ps)          tabs.push('ps');
       if (state.services.max)         tabs.push('max');
@@ -852,16 +846,43 @@
       if (state.tabs['tab-csm'])      tabs.push('csm');
       if (state.tabs['tab-onboard'])  tabs.push('onboard');
       if (state.tabs['tab-raid'])     tabs.push('raid');
+      return { name, color, tabs: tabs.join(',') };
+    }
+
+    function buildBtpLink() {
       const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
-      const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
+      const params = new URLSearchParams(buildBtpParams());
       if (state.logoCompressed) {
-        // Strip data URL prefix, convert to URL-safe base64 (+ → -, / → _, no padding)
         const b64 = state.logoCompressed
           .replace(/^data:image\/[^;]+;base64,/, '')
           .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         params.set('logo', b64);
       }
       return base + '?' + params.toString();
+    }
+
+    async function openDashboard() {
+      const base = 'https://ne-onesap-template-dashboard.cfapps.us10.hana.ondemand.com/';
+      const params = new URLSearchParams(buildBtpParams());
+      if (state.logoCompressed) {
+        try {
+          const res = await fetch('https://ne-onesap-template-dashboard.cfapps.us10.hana.ondemand.com/api/logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ logo: state.logoCompressed })
+          });
+          const data = await res.json();
+          if (data.token) params.set('logo_token', data.token);
+        } catch(e) {
+          // Fallback: embed logo directly in URL (may fail for large logos)
+          const b64 = state.logoCompressed
+            .replace(/^data:image\/[^;]+;base64,/, '')
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+          params.set('logo', b64);
+        }
+      }
+      // Open via approuter URL (handles auth), pass params
+      window.open('https://ne-onesap-template.cfapps.us10.hana.ondemand.com/?' + params.toString(), '_blank');
     }
 
     function getCleanUrl() {
