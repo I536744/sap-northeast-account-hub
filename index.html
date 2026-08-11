@@ -27,7 +27,7 @@
     .nav-divider{width:1px;height:20px;background:#E0E0E0;}
     .nav-title{font-size:15px;font-weight:700;color:#1A1A1A;letter-spacing:-.2px;}
     .nav-right{display:flex;align-items:center;gap:16px;}
-    .nav-welcome{font-size:13px;color:#555;}
+    .nav-welcome{font-size:13px;color:#0057D2;font-weight:700;}
     .nav-user-dot{
       width:30px;height:30px;
       background:#0057D2;
@@ -363,7 +363,8 @@
 
     if (user) {
       userEmail = (user.email || '').toLowerCase();
-      const firstName = user.firstname || (userEmail ? userEmail.split('@')[0] : '');
+      const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
+      const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
       if (firstName) {
         document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
         const initials = firstName.charAt(0).toUpperCase() +
