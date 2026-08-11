@@ -654,13 +654,16 @@
         img.onload = function() {
           state.logoNatW = img.naturalWidth;
           state.logoNatH = img.naturalHeight;
-          // Draw logo as-is (no background removal — keeps colors correct)
+          // Keep original as-is for DB upload (full quality, exactly what was uploaded)
           const canvas = document.createElement('canvas');
           canvas.width  = img.naturalWidth;
           canvas.height = img.naturalHeight;
-          canvas.getContext('2d').drawImage(img, 0, 0);
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
           state.logoBase64 = canvas.toDataURL('image/png');
-          // JPEG 100px wide, quality 0.75, white bg — fits in URL, sharp enough at 44px display
+          // Small JPEG only for URL fallback (100px, white bg)
           const cw = Math.min(img.naturalWidth, 100);
           const ch = Math.round(img.naturalHeight * (cw / img.naturalWidth));
           const cc = document.createElement('canvas');
@@ -670,7 +673,6 @@
           ctx2.fillRect(0, 0, cw, ch);
           ctx2.drawImage(img, 0, 0, cw, ch);
           state.logoCompressed = cc.toDataURL('image/jpeg', 0.75);
-          state.logoBase64 = state.logoCompressed;
           showLogoPreview(state.logoBase64);
         };
         img.src = e.target.result;
@@ -871,7 +873,7 @@
           const res = await fetch('https://ne-onesap-template-dashboard.cfapps.us10.hana.ondemand.com/api/logo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ logo: state.logoCompressed })
+            body: JSON.stringify({ logo: state.logoBase64 })
           });
           const data = await res.json();
           if (data.token) { params.set('logo_token', data.token); }
