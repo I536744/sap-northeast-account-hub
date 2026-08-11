@@ -440,14 +440,15 @@
     </div>
   </div>
 
-  <!-- ── STEP 2: Services ── -->
+  <!-- ── STEP 2: Services + Tabs ── -->
   <div class="card step-page" id="page-2">
     <div class="cols">
       <div>
-        <div class="card-title">Which SAP services do you have?</div>
-        <div class="card-sub">Select the engagements active for this account — these control which tabs appear on your dashboard.</div>
+        <div class="card-title">Services &amp; Dashboard Tabs</div>
+        <div class="card-sub">Select active SAP engagements, then choose exactly which tabs appear on your dashboard.</div>
 
-        <div class="services-grid">
+        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">SAP Engagements</div>
+        <div class="services-grid" style="margin-bottom:24px;">
 
           <div class="svc-group">
             <div class="svc-group-header" onclick="toggleSvc('ps')">
@@ -456,7 +457,7 @@
               </div>
               <div>
                 <div class="svc-name">Professional Services (PS)</div>
-                <div class="svc-desc">Active delivery projects, milestones, and PS engagements</div>
+                <div class="svc-desc">Active delivery projects, milestones, PS engagements</div>
               </div>
             </div>
             <div class="svc-sub" id="sub-ps">
@@ -482,7 +483,7 @@
               </div>
               <div>
                 <div class="svc-name">MaxAttention (MAX)</div>
-                <div class="svc-desc">Premium support — dedicated SAP experts and EA workload tracking</div>
+                <div class="svc-desc">Premium support — dedicated SAP experts and EA workload</div>
               </div>
             </div>
             <div class="svc-sub" id="sub-max">
@@ -508,7 +509,7 @@
               </div>
               <div>
                 <div class="svc-name">Cloud Application Services (CAS)</div>
-                <div class="svc-desc">Managed cloud services and operations tracking</div>
+                <div class="svc-desc">Managed cloud services and operations</div>
               </div>
             </div>
             <div class="svc-sub" id="sub-cas">
@@ -527,6 +528,34 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ── Tab selection ── -->
+        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Dashboard Tabs</div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:12px;">Always on: <strong style="color:rgba(255,255,255,.6);">Summary · RAID Log · CSM Contacts · Events</strong></div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="svc-sub-item" onclick="toggleTab('tab-ps')">
+              <div class="sub-check checked" id="check-tab-ps"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>Professional Services</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-max')">
+              <div class="sub-check checked" id="check-tab-max"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>MaxAttention</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-ea')">
+              <div class="sub-check checked" id="check-tab-ea"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>Enterprise Architecture (EA)</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-cas')">
+              <div class="sub-check checked" id="check-tab-cas"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>Cloud Application Services</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-opp')">
+              <div class="sub-check checked" id="check-tab-opp"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>Opportunities &amp; Roadmap</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -642,7 +671,8 @@
       logoBase64: null,
       color: '#0070F2',
       services: { ps: false, max: false, cas: false },
-      subServices: {}
+      subServices: {},
+      tabs: { 'tab-ps': true, 'tab-max': true, 'tab-ea': true, 'tab-cas': true, 'tab-opp': true }
     };
 
     // Pre-fill account name from URL ?account=
@@ -704,6 +734,14 @@
       syncPreview();
     }
 
+    // ── Tab toggles ──
+    function toggleTab(key) {
+      state.tabs[key] = !state.tabs[key];
+      document.getElementById('check-' + key).classList.toggle('checked', state.tabs[key]);
+      updateTabsPreview();
+      updateConfigPreview();
+    }
+
     // ── Services ──
     function toggleSvc(key) {
       state.services[key] = !state.services[key];
@@ -754,24 +792,31 @@
     }
 
     function updateTabsPreview() {
-      const optional = [];
-      if (state.services.ps)  optional.push('Professional Services');
-      if (state.services.max) optional.push('MaxAttention');
-      if (state.services.cas) optional.push('Cloud App Services');
+      const TAB_LABELS = {
+        'tab-ps': 'Professional Services',
+        'tab-max': 'MaxAttention',
+        'tab-ea': 'Enterprise Architecture',
+        'tab-cas': 'Cloud App Services',
+        'tab-opp': 'Opportunities & Roadmap'
+      };
+      const selected = Object.keys(state.tabs).filter(k => state.tabs[k]);
       const c = document.getElementById('tabs-preview');
-      c.innerHTML = optional.map(t =>
+      c.innerHTML = selected.map(k =>
         `<div style="background:rgba(0,112,242,.18);border:1px solid rgba(0,112,242,.4);
-          border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;color:#BDD9FF;">${t}</div>`
-      ).join('') || '<div style="font-size:11px;color:rgba(255,255,255,.25);">No optional tabs selected yet</div>';
+          border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;color:#BDD9FF;">${TAB_LABELS[k]}</div>`
+      ).join('') || '<div style="font-size:11px;color:rgba(255,255,255,.25);">No optional tabs selected</div>';
       renderStep3Tabs();
     }
 
     function renderStep3Tabs() {
+      const TAB_SHORT = {
+        'tab-ps': 'PS', 'tab-max': 'MAX', 'tab-ea': 'EA', 'tab-cas': 'CAS', 'tab-opp': 'Opp'
+      };
       const color = state.color;
       const tabs = ['Summary'];
-      if (state.services.ps) tabs.push('PS');
-      if (state.services.max) tabs.push('MAX');
-      if (state.services.cas) tabs.push('CAS');
+      ['tab-ps','tab-max','tab-ea','tab-cas','tab-opp'].forEach(k => {
+        if (state.tabs[k]) tabs.push(TAB_SHORT[k]);
+      });
       tabs.push('RAID', 'Events', 'CSM');
       const c = document.getElementById('prev2-tabs');
       if (c) c.innerHTML = tabs.map((t,i) =>
@@ -784,6 +829,12 @@
       const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
       const services = Object.keys(state.services).filter(k => state.services[k]);
       const subs = Object.keys(state.subServices).filter(k => state.subServices[k]);
+      const TAB_LABELS = {
+        'tab-ps': 'Professional Services', 'tab-max': 'MaxAttention',
+        'tab-ea': 'Enterprise Architecture', 'tab-cas': 'Cloud Application Services',
+        'tab-opp': 'Opportunities & Roadmap'
+      };
+      const tabs = Object.keys(state.tabs).filter(k => state.tabs[k]).map(k => TAB_LABELS[k]);
       const cfg = {
         name: name,
         short_name: slug,
@@ -792,6 +843,7 @@
         export_prefix: `${slug.toUpperCase().replace(/-/g,'_')}_OneSAP`,
         services: services,
         sub_services: subs,
+        tabs: tabs,
         admin_emails: ['alexandra.coyle@sap.com'],
         dashboard_url: `https://ne-${slug}-app.cfapps.us10.hana.ondemand.com`
       };
