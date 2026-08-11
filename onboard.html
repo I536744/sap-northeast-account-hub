@@ -657,8 +657,8 @@
           canvas.height = img.naturalHeight;
           canvas.getContext('2d').drawImage(img, 0, 0);
           state.logoBase64 = canvas.toDataURL('image/png');
-          // Compressed version for URL param — fill white bg (fixes transparent PNG→JPEG black), max 80×40, JPEG 0.5
-          const cw = Math.min(img.naturalWidth, 80);
+          // Full-quality PNG for both preview and dashboard — same as what you see in preview
+          const cw = Math.min(img.naturalWidth, 400);
           const ch = Math.round(img.naturalHeight * (cw / img.naturalWidth));
           const cc = document.createElement('canvas');
           cc.width = cw; cc.height = ch;
@@ -666,7 +666,8 @@
           ctx2.fillStyle = '#ffffff';
           ctx2.fillRect(0, 0, cw, ch);
           ctx2.drawImage(img, 0, 0, cw, ch);
-          state.logoCompressed = cc.toDataURL('image/jpeg', 0.5);
+          state.logoCompressed = cc.toDataURL('image/png');
+          state.logoBase64 = state.logoCompressed;
           showLogoPreview(state.logoBase64);
         };
         img.src = e.target.result;
