@@ -605,6 +605,7 @@
       name: '',
       logoBase64: null,
       logoCompressed: null,
+      logoNatW: 1, logoNatH: 1,
       color: '#0057D2',
       services: { ps: false, max: false, cas: false, ea: false },
       subServices: {},
@@ -651,6 +652,8 @@
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
+          state.logoNatW = img.naturalWidth;
+          state.logoNatH = img.naturalHeight;
           // Draw logo as-is (no background removal — keeps colors correct)
           const canvas = document.createElement('canvas');
           canvas.width  = img.naturalWidth;
@@ -874,11 +877,17 @@
           const data = await res.json();
           if (data.token) params.set('logo_token', data.token);
         } catch(e) {
-          // Fallback: embed logo directly in URL (may fail for large logos)
-          const b64 = state.logoCompressed
+          // Fallback: tiny JPEG so URL fits within header limits
+          const fc = document.createElement('canvas');
+          fc.width = 100; fc.height = Math.round(100 * (state.logoNatH / state.logoNatW));
+          const fx = fc.getContext('2d');
+          fx.fillStyle = '#fff'; fx.fillRect(0, 0, fc.width, fc.height);
+          const tmp = new Image(); tmp.src = state.logoCompressed;
+          fx.drawImage(tmp, 0, 0, fc.width, fc.height);
+          const small = fc.toDataURL('image/jpeg', 0.7)
             .replace(/^data:image\/[^;]+;base64,/, '')
             .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-          params.set('logo', b64);
+          params.set('logo', small);
         }
       }
       // Open via approuter URL (handles auth), pass params
