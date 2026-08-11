@@ -867,10 +867,22 @@
     async function openDashboard() {
       const params = new URLSearchParams(buildBtpParams());
       if (state.logoCompressed) {
-        const b64 = state.logoCompressed
-          .replace(/^data:image\/[^;]+;base64,/, '')
-          .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-        params.set('logo', b64);
+        try {
+          const res = await fetch('https://ne-onesap-template-dashboard.cfapps.us10.hana.ondemand.com/api/logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ logo: state.logoCompressed })
+          });
+          const data = await res.json();
+          if (data.token) { params.set('logo_token', data.token); }
+          else { throw new Error('no token'); }
+        } catch(e) {
+          // Fallback: small JPEG inline in URL
+          const b64 = state.logoCompressed
+            .replace(/^data:image\/[^;]+;base64,/, '')
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+          params.set('logo', b64);
+        }
       }
       window.open('https://ne-onesap-template.cfapps.us10.hana.ondemand.com/?' + params.toString(), '_blank');
     }
