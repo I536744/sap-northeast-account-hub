@@ -348,42 +348,21 @@
     <div class="cols">
       <div>
         <div class="card-title">Brand your dashboard</div>
-        <div class="card-sub">Set your company name, logo, and accent color. Your dashboard will match your brand exactly.</div>
+        <div class="card-sub">Set your company name and logo. Your dashboard will be deployed in the standard SAP ONE SAP style.</div>
 
         <div class="field">
           <label>Company Name</label>
-          <input type="text" id="f-name" placeholder="e.g. Accenture" oninput="syncPreview()">
+          <input type="text" id="f-name" placeholder="e.g. Deloitte Global Services" oninput="syncPreview()">
         </div>
 
         <div class="field">
           <label>Company Logo</label>
           <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
             <input type="file" id="logo-file" accept="image/*" onchange="handleLogo(this)" style="display:none">
-            <img id="logo-preview" src="" alt="logo">
+            <img id="logo-preview" src="" alt="logo" style="mix-blend-mode:screen;">
             <div class="upload-ico" id="upload-ico">📁</div>
-            <div class="upload-hint" id="upload-hint">Click to upload logo (PNG, SVG, JPG)</div>
+            <div class="upload-hint" id="upload-hint">Click to upload logo — background will be removed automatically</div>
             <div class="clear-logo" id="clear-logo" onclick="event.stopPropagation();clearLogo()">Remove</div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Accent Color</label>
-          <div class="color-row">
-            <div class="color-picker">
-              <input type="color" id="f-color" value="#0070F2" oninput="onColorPicker()">
-            </div>
-            <input type="text" class="color-hex" id="f-hex" value="#0070F2" maxlength="7"
-                   placeholder="#0070F2" oninput="onHexInput()">
-          </div>
-          <div class="swatches">
-            <div class="swatch" style="background:#0070F2" onclick="setColor('#0070F2')" title="SAP Blue"></div>
-            <div class="swatch" style="background:#0057D2" onclick="setColor('#0057D2')" title="IBM Blue"></div>
-            <div class="swatch" style="background:#107E3E" onclick="setColor('#107E3E')" title="Green"></div>
-            <div class="swatch" style="background:#E76500" onclick="setColor('#E76500')" title="Orange"></div>
-            <div class="swatch" style="background:#6A1B79" onclick="setColor('#6A1B79')" title="Purple"></div>
-            <div class="swatch" style="background:#BB0000" onclick="setColor('#BB0000')" title="Red"></div>
-            <div class="swatch" style="background:#002A86" onclick="setColor('#002A86')" title="Deep Blue"></div>
-            <div class="swatch" style="background:#475E75" onclick="setColor('#475E75')" title="Grey"></div>
           </div>
         </div>
       </div>
@@ -674,7 +653,7 @@
     const state = {
       name: '',
       logoBase64: null,
-      color: '#0070F2',
+      color: '#0057D2',
       services: { ps: false, max: false, cas: false },
       subServices: {},
       tabs: { 'tab-ps': true, 'tab-max': true, 'tab-ea': true, 'tab-cas': true, 'tab-opp': true }
@@ -712,21 +691,65 @@
       }
     }
 
-    // ── Logo ──
+    // ── Logo with background removal ──
     function handleLogo(input) {
       const file = input.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
-        state.logoBase64 = e.target.result;
-        document.getElementById('logo-preview').src = e.target.result;
-        document.getElementById('logo-preview').style.display = 'block';
-        document.getElementById('upload-ico').style.display = 'none';
-        document.getElementById('upload-hint').style.display = 'none';
-        document.getElementById('clear-logo').style.display = 'block';
-        syncPreview();
+        const img = new Image();
+        img.onload = function() {
+          // Draw to canvas and strip near-white / near-light background
+          const canvas = document.createElement('canvas');
+          canvas.width  = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          try {
+            const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const d  = id.data;
+            // Sample corners to detect background color (usually white or light grey)
+            function sampleCorner(x, y) {
+              const i = (y * canvas.width + x) * 4;
+              return [d[i], d[i+1], d[i+2]];
+            }
+            const corners = [
+              sampleCorner(0, 0),
+              sampleCorner(canvas.width - 1, 0),
+              sampleCorner(0, canvas.height - 1),
+              sampleCorner(canvas.width - 1, canvas.height - 1)
+            ];
+            // Average background color
+            const bg = corners.reduce((a, c) => [a[0]+c[0], a[1]+c[1], a[2]+c[2]], [0,0,0])
+                             .map(v => Math.round(v / 4));
+            // Only remove if background is light (sum > 600)
+            if (bg[0] + bg[1] + bg[2] > 600) {
+              const tol = 40;
+              for (let i = 0; i < d.length; i += 4) {
+                if (Math.abs(d[i]-bg[0]) < tol &&
+                    Math.abs(d[i+1]-bg[1]) < tol &&
+                    Math.abs(d[i+2]-bg[2]) < tol) {
+                  d[i+3] = 0; // transparent
+                }
+              }
+              ctx.putImageData(id, 0, 0);
+            }
+          } catch(e) { /* cross-origin or security error — use original */ }
+          state.logoBase64 = canvas.toDataURL('image/png');
+          showLogoPreview(state.logoBase64);
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    }
+
+    function showLogoPreview(src) {
+      document.getElementById('logo-preview').src = src;
+      document.getElementById('logo-preview').style.display = 'block';
+      document.getElementById('upload-ico').style.display = 'none';
+      document.getElementById('upload-hint').style.display = 'none';
+      document.getElementById('clear-logo').style.display = 'block';
+      syncPreview();
     }
     function clearLogo() {
       state.logoBase64 = null;
