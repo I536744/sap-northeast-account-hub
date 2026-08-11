@@ -33,11 +33,21 @@
       background:var(--blue-light);border:none;cursor:pointer;
       font-size:14px;font-weight:700;color:var(--blue);
       display:flex;align-items:center;justify-content:center;
-      transition:background .15s;
+      transition:background .15s;position:relative;
     }
     .help-btn:hover{background:#D0E6FF;}
+    .help-btn .help-tooltip{
+      display:none;position:absolute;top:38px;right:0;
+      background:#fff;border:1px solid #D0E0FF;border-radius:10px;
+      box-shadow:0 4px 16px rgba(0,0,57,.12);
+      padding:14px 16px;width:260px;text-align:left;
+      font-size:12px;font-weight:400;color:#1A1A1A;z-index:999;
+      line-height:1.6;
+    }
+    .help-btn:hover .help-tooltip{display:block;}
+    .help-tooltip strong{display:block;margin-bottom:6px;font-size:13px;color:#0057D2;}
 
-    /* ── Hero strip (steps) ── */
+
     .hero-strip{
       background:#2E6BE5;
       padding:28px 28px 32px;
@@ -252,7 +262,15 @@
     </div>
     <div class="nav-right">
       <a href="./index.html" class="nav-back">← Hub</a>
-      <button class="help-btn" onclick="document.getElementById('help-modal').classList.add('open')" style="margin-left:auto;">?</button>
+      <button class="help-btn" onclick="document.getElementById('help-modal').classList.add('open')" style="margin-left:auto;">?
+        <div class="help-tooltip" onclick="event.stopPropagation()">
+          <strong>How to use this hub</strong>
+          Step 1: Enter your account name &amp; upload logo<br>
+          Step 2: Select SAP engagements<br>
+          Step 3: Copy your dashboard link<br><br>
+          Questions? <a href="mailto:alexandra.coyle@sap.com" style="color:#0057D2;">alexandra.coyle@sap.com</a>
+        </div>
+      </button>
     </div>
   </nav>
 
