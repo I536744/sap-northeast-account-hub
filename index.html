@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SAP MaxAttention — Northeast</title>
+  <title>One SAP — Account Hub</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,69 +21,124 @@
 
     img.sap-logo { height: 48px; }
 
-    .title { text-align: center; color: #fff; font-size: 32px; font-weight: 700; line-height: 1.2; }
-    .subtitle { color: rgba(255,255,255,0.6); font-size: 14px; text-align: center; margin-top: -12px; }
+    .title { text-align: center; color: #fff; font-size: 32px; font-weight: 700; }
+    .subtitle { color: rgba(255,255,255,0.6); font-size: 14px; text-align: center; margin-top: 6px; }
 
     .lookup {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 24px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 12px;
-      width: 100%;
-      max-width: 400px;
-      padding: 0 24px;
-      position: relative;
     }
 
-    #account-input {
+    /* ── Dropdown trigger ── */
+    .dropdown { position: relative; width: 100%; }
+
+    #dd-btn {
       width: 100%;
-      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 8px;
+      border-radius: 10px;
+      color: rgba(255,255,255,0.45);
       font-size: 15px;
-      color: #fff;
-      outline: none;
+      cursor: pointer;
+      text-align: left;
       transition: border-color .15s, background .15s;
+      gap: 8px;
     }
-    #account-input::placeholder { color: rgba(255,255,255,0.4); }
-    #account-input:focus { border-color: #4CB1FF; background: rgba(255,255,255,0.15); }
+    #dd-btn.has-value { color: #fff; }
+    #dd-btn:hover, #dd-btn.open {
+      border-color: #4CB1FF;
+      background: rgba(255,255,255,0.15);
+    }
+    #dd-btn .chevron {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      opacity: 0.6;
+      transition: transform .2s;
+    }
+    #dd-btn.open .chevron { transform: rotate(180deg); }
 
-    #suggestions {
+    /* ── Dropdown panel ── */
+    #dd-panel {
+      display: none;
       position: absolute;
-      top: 54px;
-      left: 24px;
-      right: 24px;
+      top: calc(100% + 6px);
+      left: 0; right: 0;
       background: #001A5C;
       border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 100;
-      display: none;
+      border-radius: 10px;
+      z-index: 200;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
-    #suggestions::-webkit-scrollbar { width: 4px; }
-    #suggestions::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    #dd-panel.open { display: block; }
 
-    .suggestion {
-      padding: 10px 16px;
+    #dd-search {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255,255,255,0.07);
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    #dd-search::placeholder { color: rgba(255,255,255,0.35); }
+
+    #dd-list {
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    #dd-list::-webkit-scrollbar { width: 4px; }
+    #dd-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+    .dd-item {
+      padding: 10px 14px;
       cursor: pointer;
       font-size: 13px;
       color: rgba(255,255,255,0.85);
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      line-height: 1.3;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
-    .suggestion:last-child { border-bottom: none; }
-    .suggestion:hover, .suggestion.active { background: rgba(76,177,255,0.2); color: #fff; }
-    .suggestion small { display: block; color: rgba(255,255,255,0.4); font-size: 11px; margin-top: 1px; }
-    .suggestion mark { background: none; color: #4CB1FF; font-weight: 700; }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item:hover, .dd-item.active { background: rgba(76,177,255,0.18); color: #fff; }
+    .dd-item .item-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dd-item .item-sub { font-size: 11px; color: rgba(255,255,255,0.38); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    .dd-item mark { background: none; color: #4CB1FF; font-weight: 700; }
+    .live-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #4CB1FF;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
+    #dd-empty {
+      padding: 14px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      display: none;
+    }
+
+    /* ── CTA button ── */
     #enter-btn {
       width: 100%;
       background: #4CB1FF;
       color: #00144A;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 13px 32px;
       font-size: 14px;
       font-weight: 700;
@@ -104,22 +159,35 @@
 
   <div style="text-align:center">
     <div class="title">One SAP</div>
-    <div class="subtitle" style="margin-top:8px">Account Dashboard Hub</div>
+    <div class="subtitle">Account Dashboard Hub</div>
   </div>
 
   <div class="lookup">
-    <input id="account-input" type="text" placeholder="Search for an account…"
-           autocomplete="off" spellcheck="false">
-    <div id="suggestions"></div>
-    <button id="enter-btn" onclick="goToDashboard()" disabled>Enter Dashboard →</button>
+    <div class="dropdown">
+      <button id="dd-btn" onclick="toggleDropdown()">
+        <span id="dd-label">Select an account…</span>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6l4 4 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="dd-panel">
+        <input id="dd-search" type="text" placeholder="Search accounts…"
+               autocomplete="off" spellcheck="false">
+        <div id="dd-list"></div>
+        <div id="dd-empty">No accounts found</div>
+      </div>
+    </div>
+
+    <button id="enter-btn" onclick="goToDashboard()" disabled>Go to Dashboard →</button>
     <div id="msg"></div>
   </div>
 
   <script>
-    let allAccounts = [];   // from accounts.json  (all 11k accounts)
-    let customers   = [];   // from customers.json  (accounts with live dashboards)
+    let allAccounts = [];
+    let customers   = [];
     let selected    = null;
     let activeIdx   = -1;
+    let isOpen      = false;
 
     Promise.all([
       fetch('./accounts.json').then(r => r.json()),
@@ -129,81 +197,108 @@
       customers   = custs;
     });
 
-    const input   = document.getElementById('account-input');
-    const sugBox  = document.getElementById('suggestions');
-    const btn     = document.getElementById('enter-btn');
-    const msg     = document.getElementById('msg');
+    const ddBtn    = document.getElementById('dd-btn');
+    const ddPanel  = document.getElementById('dd-panel');
+    const ddSearch = document.getElementById('dd-search');
+    const ddList   = document.getElementById('dd-list');
+    const ddEmpty  = document.getElementById('dd-empty');
+    const ddLabel  = document.getElementById('dd-label');
+    const enterBtn = document.getElementById('enter-btn');
+    const msg      = document.getElementById('msg');
 
-    input.addEventListener('input', () => {
-      selected = null;
-      btn.disabled = true;
-      msg.className = '';
-      msg.textContent = '';
-      const q = input.value.trim();
-      if (q.length < 2) { hideSug(); return; }
-      showSuggestions(q);
+    function toggleDropdown() {
+      isOpen ? closeDropdown() : openDropdown();
+    }
+
+    function openDropdown() {
+      isOpen = true;
+      ddBtn.classList.add('open');
+      ddPanel.classList.add('open');
+      ddSearch.value = '';
+      renderList('');
+      setTimeout(() => ddSearch.focus(), 50);
+    }
+
+    function closeDropdown() {
+      isOpen = false;
+      ddBtn.classList.remove('open');
+      ddPanel.classList.remove('open');
+      activeIdx = -1;
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.dropdown')) closeDropdown();
     });
 
-    input.addEventListener('keydown', e => {
-      const items = sugBox.querySelectorAll('.suggestion');
+    ddSearch.addEventListener('input', () => {
+      activeIdx = -1;
+      renderList(ddSearch.value.trim());
+    });
+
+    ddSearch.addEventListener('keydown', e => {
+      const items = ddList.querySelectorAll('.dd-item');
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         activeIdx = Math.min(activeIdx + 1, items.length - 1);
-        highlight(items);
+        highlightItem(items);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         activeIdx = Math.max(activeIdx - 1, 0);
-        highlight(items);
+        highlightItem(items);
       } else if (e.key === 'Enter') {
-        if (activeIdx >= 0 && items[activeIdx]) {
-          items[activeIdx].click();
-        } else if (selected) {
-          goToDashboard();
-        }
+        if (activeIdx >= 0 && items[activeIdx]) items[activeIdx].click();
       } else if (e.key === 'Escape') {
-        hideSug();
+        closeDropdown();
       }
     });
 
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.lookup')) hideSug();
-    });
-
-    function showSuggestions(q) {
+    function renderList(q) {
       const lower = q.toLowerCase();
-      const matches = allAccounts
-        .filter(a => a.name.toLowerCase().includes(lower))
-        .slice(0, 8);
+      let matches = q.length === 0
+        ? allAccounts.slice(0, 50)
+        : allAccounts.filter(a => a.name.toLowerCase().includes(lower)).slice(0, 50);
 
-      if (!matches.length) { hideSug(); return; }
+      // put LIVE accounts first
+      matches.sort((a, b) => {
+        const aLive = customers.some(c => c.name.toLowerCase() === a.name.toLowerCase()) ? 0 : 1;
+        const bLive = customers.some(c => c.name.toLowerCase() === b.name.toLowerCase()) ? 0 : 1;
+        return aLive - bLive;
+      });
 
-      activeIdx = -1;
-      sugBox.innerHTML = matches.map((a, i) => {
-        const hi = a.name.replace(new RegExp(`(${escRe(q)})`, 'gi'), '<mark>$1</mark>');
+      if (!matches.length) {
+        ddList.innerHTML = '';
+        ddEmpty.style.display = 'block';
+        return;
+      }
+      ddEmpty.style.display = 'none';
+
+      ddList.innerHTML = matches.map((a, i) => {
+        const nameHtml = q
+          ? a.name.replace(new RegExp(`(${escRe(q)})`, 'gi'), '<mark>$1</mark>')
+          : a.name;
         const live = customers.find(c => c.name.toLowerCase() === a.name.toLowerCase());
-        return `<div class="suggestion" data-idx="${i}" onclick="selectAccount(${JSON.stringify(a).replace(/"/g,'&quot;')})">
-          ${hi}${live ? ' <span style="color:#4CB1FF;font-size:10px;font-weight:700;">● LIVE</span>' : ''}
-          <small>${a.parent !== a.name ? a.parent : ''}</small>
+        const sub  = a.parent && a.parent !== a.name ? a.parent : '';
+        return `<div class="dd-item" data-idx="${i}" onclick="selectAccount(${JSON.stringify(a).replace(/"/g,'&quot;')})">
+          <span class="item-name">${nameHtml}</span>
+          ${sub ? `<span class="item-sub">${sub}</span>` : ''}
+          ${live ? '<span class="live-badge">● LIVE</span>' : ''}
         </div>`;
       }).join('');
-      sugBox.style.display = 'block';
     }
 
-    function highlight(items) {
+    function highlightItem(items) {
       items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
       if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
     }
 
-    function hideSug() { sugBox.style.display = 'none'; activeIdx = -1; }
-
     function selectAccount(a) {
       selected = a;
-      input.value = a.name;
-      hideSug();
-      btn.disabled = false;
+      ddLabel.textContent = a.name;
+      ddBtn.classList.add('has-value');
+      closeDropdown();
+      enterBtn.disabled = false;
       msg.className = '';
       msg.textContent = '';
-      input.blur();
     }
 
     function goToDashboard() {
