@@ -131,14 +131,15 @@
     .preview-label{font-size:11px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;border-bottom:1px solid var(--border);}
 
     /* Mini dashboard mockup */
-    .dash-mock-header{display:flex;align-items:center;gap:10px;padding:10px 14px;transition:background .3s;}
-    .dash-mock-logo{height:28px;width:auto;max-width:100px;object-fit:contain;mix-blend-mode:screen;}
-    .dash-mock-logo-placeholder{height:28px;width:90px;border-radius:4px;background:rgba(255,255,255,.2);}
-    .dash-mock-title{font-size:13px;font-weight:700;color:#fff;}
-    .dash-mock-sub{font-size:10px;color:rgba(255,255,255,.6);}
+    .dash-mock-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:3px solid #0057D2;}
+    .dash-mock-logo{height:28px;width:auto;max-width:100px;object-fit:contain;}
+    .dash-mock-logo-placeholder{height:28px;width:90px;border-radius:4px;background:#E8EEF5;}
+    .dash-mock-title{font-size:13px;font-weight:700;color:#00144A;}
+    .dash-mock-sub{font-size:10px;color:#666;}
     .dash-mock-tabs{display:flex;gap:0;background:#fff;padding:0 12px;overflow:hidden;border-bottom:1px solid var(--border);}
     .dash-mock-tab{font-size:10px;padding:7px 10px;cursor:default;color:#999;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;}
-    .dash-mock-tab.act{color:var(--blue);transition:border-color .3s;}
+    .dash-mock-tab.act{color:#0057D2;transition:border-color .3s,color .3s;}
+    .dash-mock-save{margin-left:auto;background:#0057D2;color:#fff;border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:700;cursor:default;transition:background .3s;flex-shrink:0;}
     .dash-mock-body{padding:12px;display:flex;flex-direction:column;gap:8px;background:#fff;}
     .mock-kpi-row{display:flex;gap:8px;}
     .mock-kpi{flex:1;border-radius:6px;padding:8px 10px;background:#F5F6F7;border:1px solid var(--border);}
@@ -335,9 +336,14 @@
           <div class="swatches">
             <div class="swatch" style="background:#0057D2" onclick="setColor('#0057D2')" title="SAP Blue"></div>
             <div class="swatch" style="background:#00144A" onclick="setColor('#00144A')" title="SAP Navy"></div>
-            <div class="swatch" style="background:#2E6BE5" onclick="setColor('#2E6BE5')" title="SAP Horizon Blue"></div>
+            <div class="swatch" style="background:#2E6BE5" onclick="setColor('#2E6BE5')" title="Horizon Blue"></div>
+            <div class="swatch" style="background:#0070F2" onclick="setColor('#0070F2')" title="Sky Blue"></div>
             <div class="swatch" style="background:#107E3E" onclick="setColor('#107E3E')" title="SAP Green"></div>
+            <div class="swatch" style="background:#0F6243" onclick="setColor('#0F6243')" title="Forest Green"></div>
             <div class="swatch" style="background:#6A28C7" onclick="setColor('#6A28C7')" title="SAP Purple"></div>
+            <div class="swatch" style="background:#E76500" onclick="setColor('#E76500')" title="SAP Orange"></div>
+            <div class="swatch" style="background:#BB0000" onclick="setColor('#BB0000')" title="SAP Red"></div>
+            <div class="swatch" style="background:#475E75" onclick="setColor('#475E75')" title="SAP Slate"></div>
           </div>
         </div>
       </div>
@@ -346,16 +352,17 @@
       <div>
         <div class="preview-label">Live Preview</div>
         <div class="preview-panel">
-          <div class="dash-mock-header" id="prev-header" style="background:#0057D2">
+          <div class="dash-mock-header" id="prev-header" style="border-bottom-color:#0057D2">
             <img id="prev-logo" class="dash-mock-logo" src="" style="display:none">
             <div class="dash-mock-logo-placeholder" id="prev-logo-ph"></div>
             <div>
               <div class="dash-mock-title" id="prev-title">OneSAP at Your Company</div>
               <div class="dash-mock-sub">Account Level Dashboard</div>
             </div>
+            <button class="dash-mock-save" id="prev-save-btn">Save</button>
           </div>
           <div class="dash-mock-tabs" id="prev-tabs">
-            <div class="dash-mock-tab act" id="prev-tab-active" style="border-bottom-color:#0057D2">Summary</div>
+            <div class="dash-mock-tab act" id="prev-tab-active" style="border-bottom-color:#0057D2;color:#0057D2">Summary</div>
             <div class="dash-mock-tab">PS</div>
             <div class="dash-mock-tab">MAX</div>
             <div class="dash-mock-tab">CAS</div>
@@ -414,25 +421,12 @@
                 <div class="svc-desc">Active delivery projects, milestones, PS engagements</div>
               </div>
             </div>
-            <div class="svc-sub" id="sub-ps">
-              <div class="svc-sub-item" onclick="toggleSubSvc('ps-s4')">
-                <div class="sub-check" id="check-ps-s4"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>S/4HANA Activations</span>
-              </div>
-              <div class="svc-sub-item" onclick="toggleSubSvc('ps-cloud')">
-                <div class="sub-check" id="check-ps-cloud"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>Cloud Migration</span>
-              </div>
-              <div class="svc-sub-item" onclick="toggleSubSvc('ps-btp')">
-                <div class="sub-check" id="check-ps-btp"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>BTP / Integration</span>
-              </div>
-            </div>
+            <div class="svc-sub" id="sub-ps"></div>
           </div>
 
           <div class="svc-group">
             <div class="svc-group-header" onclick="toggleSvc('max')">
-              <div class="custom-check" id="check-max">
+              <div class="custom-check checked" id="check-max">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div>
@@ -440,25 +434,12 @@
                 <div class="svc-desc">Premium support — dedicated SAP experts and EA workload</div>
               </div>
             </div>
-            <div class="svc-sub" id="sub-max">
-              <div class="svc-sub-item" onclick="toggleSubSvc('max-arch')">
-                <div class="sub-check" id="check-max-arch"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>Architecture Review</span>
-              </div>
-              <div class="svc-sub-item" onclick="toggleSubSvc('max-sla')">
-                <div class="sub-check" id="check-max-sla"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>SLA / SLA+ Support</span>
-              </div>
-              <div class="svc-sub-item" onclick="toggleSubSvc('max-innovation')">
-                <div class="sub-check" id="check-max-innovation"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>Innovation Services</span>
-              </div>
-            </div>
+            <div class="svc-sub" id="sub-max"></div>
           </div>
 
           <div class="svc-group">
             <div class="svc-group-header" onclick="toggleSvc('cas')">
-              <div class="custom-check" id="check-cas">
+              <div class="custom-check checked" id="check-cas">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div>
@@ -466,20 +447,7 @@
                 <div class="svc-desc">Managed cloud services and operations</div>
               </div>
             </div>
-            <div class="svc-sub" id="sub-cas">
-              <div class="svc-sub-item" onclick="toggleSubSvc('cas-rise')">
-                <div class="sub-check" id="check-cas-rise"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>RISE with SAP</span>
-              </div>
-              <div class="svc-sub-item" onclick="toggleSubSvc('cas-grow')">
-                <div class="sub-check" id="check-cas-grow"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>GROW with SAP</span>
-              </div>
-              <div class="svc-sub-item" onclick="toggleSubSvc('cas-managed')">
-                <div class="sub-check" id="check-cas-managed"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-                <span>Managed Operations</span>
-              </div>
-            </div>
+            <div class="svc-sub" id="sub-cas"></div>
           </div>
 
         </div>
@@ -497,13 +465,13 @@
               <div class="sub-check checked" id="check-tab-max"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span>MaxAttention</span>
             </div>
-            <div class="svc-sub-item" onclick="toggleTab('tab-ea')">
-              <div class="sub-check checked" id="check-tab-ea"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <span>Enterprise Architecture (EA)</span>
-            </div>
             <div class="svc-sub-item" onclick="toggleTab('tab-cas')">
               <div class="sub-check checked" id="check-tab-cas"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span>Cloud Application Services</span>
+            </div>
+            <div class="svc-sub-item" onclick="toggleTab('tab-ea')">
+              <div class="sub-check checked" id="check-tab-ea"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>Enterprise Architecture (EA)</span>
             </div>
             <div class="svc-sub-item" onclick="toggleTab('tab-opp')">
               <div class="sub-check checked" id="check-tab-opp"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
@@ -551,13 +519,14 @@
       <div>
         <div class="preview-label" style="margin-bottom:10px; padding:0;">Dashboard Preview</div>
         <div class="preview-panel">
-          <div class="dash-mock-header" id="prev2-header" style="background:#0057D2; padding:14px 18px;">
+          <div class="dash-mock-header" id="prev2-header" style="border-bottom-color:#0057D2; padding:14px 18px;">
             <img id="prev2-logo" class="dash-mock-logo" src="" style="display:none; height:36px;">
             <div class="dash-mock-logo-placeholder" id="prev2-logo-ph" style="height:36px;width:120px;"></div>
             <div>
               <div class="dash-mock-title" id="prev2-title" style="font-size:15px;">OneSAP at Your Company</div>
               <div class="dash-mock-sub">Account Level Dashboard</div>
             </div>
+            <button class="dash-mock-save" id="prev2-save-btn" style="background:#0057D2;">Save</button>
           </div>
           <div id="prev2-tabs" class="dash-mock-tabs" style="padding:0 16px;"></div>
           <div class="dash-mock-body" style="padding:16px;">
@@ -767,11 +736,14 @@
       const name = state.name || 'Your Company';
       const color = state.color;
 
-      // Step 1 preview
-      document.getElementById('prev-header').style.background = color;
+      // Step 1 preview — white header, accent on border-bottom + tab + save button
+      document.getElementById('prev-header').style.borderBottomColor = color;
       document.getElementById('prev-title').textContent = 'OneSAP at ' + name;
       document.getElementById('prev-tab-active').style.borderBottomColor = color;
+      document.getElementById('prev-tab-active').style.color = color;
       document.getElementById('bar-accent').style.background = color;
+      const saveBtn = document.getElementById('prev-save-btn');
+      if (saveBtn) saveBtn.style.background = color;
 
       const pl = document.getElementById('prev-logo');
       const ph = document.getElementById('prev-logo-ph');
@@ -782,8 +754,11 @@
       }
 
       // Step 3 preview
-      document.getElementById('prev2-header').style.background = color;
+      const h2 = document.getElementById('prev2-header');
+      if (h2) h2.style.borderBottomColor = color;
       document.getElementById('prev2-title').textContent = 'OneSAP at ' + name;
+      const save2 = document.getElementById('prev2-save-btn');
+      if (save2) save2.style.background = color;
       const pl2 = document.getElementById('prev2-logo');
       const ph2 = document.getElementById('prev2-logo-ph');
       if (state.logoBase64) {
