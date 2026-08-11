@@ -6,6 +6,7 @@
     "url": "https://ibm-onesap-app.cfapps.us10.hana.ondemand.com/",
     "accent": "#0057D2",
     "industry": "Technology",
-    "region": "Northeast"
+    "region": "Northeast",
+    "team_emails": ["alexandra.coyle@sap.com", "t.lopes@sap.com", "luke.joseph@sap.com"]
   }
 ]

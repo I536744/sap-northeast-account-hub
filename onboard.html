@@ -587,13 +587,13 @@
     </div>
   </div>
 
-  <!-- ── STEP 3: Download ── -->
+  <!-- ── STEP 3: BTP Link ── -->
   <div class="card step-page" id="page-3">
-    <div class="card-title">Ready to deploy</div>
-    <div class="card-sub">Download your config and send it to the SAP MaxAttention team. Your branded dashboard will be live in minutes.</div>
+    <div class="card-title">Your dashboard is ready</div>
+    <div class="card-sub">Open your branded OneSAP dashboard on BTP — blank and ready for your data.</div>
 
     <div class="cols" style="align-items:start; gap:28px;">
-      <!-- Dashboard preview -->
+      <!-- Preview -->
       <div>
         <div class="preview-label" style="margin-bottom:10px; padding:0;">Dashboard Preview</div>
         <div class="preview-panel">
@@ -613,44 +613,50 @@
               <div class="mock-kpi"><div class="mock-kpi-n" style="color:#69F0AE">0</div><div class="mock-kpi-l">On Track</div></div>
               <div class="mock-kpi"><div class="mock-kpi-n">0</div><div class="mock-kpi-l">Completed</div></div>
             </div>
-            <div class="mock-empty" style="padding:24px 0;">
-              Add initiatives, RAID items, and contacts after deployment to populate your dashboard.
+            <div class="mock-empty" style="padding:20px 0; font-size:12px; color:rgba(255,255,255,.4);">
+              Add initiatives, RAID items, and contacts to populate your dashboard.
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Download + next steps -->
+      <!-- BTP link + actions -->
       <div>
         <div class="done-box">
           <div class="check-ico">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#69F0AE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          <h2>Config ready</h2>
-          <p>Download and send to your SAP team — they'll deploy your branded dashboard in minutes.</p>
-          <button class="btn-download" onclick="downloadConfig()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download customer.json
-          </button>
+          <h2 id="step3-name">Your Company</h2>
+          <p>Your branded dashboard is live on SAP BTP. Open it now and start adding your data.</p>
         </div>
 
+        <!-- Link box -->
+        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Your BTP Dashboard Link</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <code id="btp-link-text" style="font-size:11px;color:#BDD9FF;word-break:break-all;flex:1;line-height:1.5;"></code>
+            <button onclick="copyLink()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;" id="copy-btn">Copy</button>
+          </div>
+        </div>
+
+        <a id="open-dashboard-btn" href="#" target="_blank" class="btn-download" style="display:flex;text-decoration:none;margin-bottom:14px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open Dashboard
+        </a>
+
         <div class="deploy-steps">
-          <h4>What happens next</h4>
+          <h4>What's next</h4>
           <div class="deploy-step-item">
             <div class="n">1</div>
-            <div>Email <code>customer.json</code> to <strong style="color:#BDD9FF;">alexandra.coyle@sap.com</strong></div>
+            <div>Open the link — your branded blank dashboard loads on SAP BTP</div>
           </div>
           <div class="deploy-step-item">
             <div class="n">2</div>
-            <div>SAP team deploys your dashboard on BTP Cloud Foundry (~10 min)</div>
+            <div>Add your initiatives, RAID items, milestones, and team contacts</div>
           </div>
           <div class="deploy-step-item">
             <div class="n">3</div>
-            <div>You receive your dashboard URL and XSUAA login credentials</div>
-          </div>
-          <div class="deploy-step-item">
-            <div class="n">4</div>
-            <div>Log in and start adding initiatives, RAID items, contacts, and events</div>
+            <div>Share the link with your SAP account team</div>
           </div>
         </div>
       </div>
@@ -658,10 +664,9 @@
 
     <div class="btn-row">
       <button class="btn-secondary" onclick="goStep(2)">← Back</button>
-      <button class="btn-download" onclick="downloadConfig()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download customer.json
-      </button>
+      <a id="open-dashboard-btn2" href="#" target="_blank" class="btn-download" style="text-decoration:none;">
+        Open Dashboard →
+      </a>
     </div>
   </div>
 
@@ -787,6 +792,17 @@
         pl2.style.display = 'none'; ph2.style.display = '';
       }
 
+      // Step 3 BTP link + heading
+      const btpLink = buildBtpLink();
+      const linkEl = document.getElementById('btp-link-text');
+      if (linkEl) linkEl.textContent = btpLink;
+      const openBtn  = document.getElementById('open-dashboard-btn');
+      const openBtn2 = document.getElementById('open-dashboard-btn2');
+      if (openBtn)  openBtn.href  = btpLink;
+      if (openBtn2) openBtn2.href = btpLink;
+      const nameEl = document.getElementById('step3-name');
+      if (nameEl) nameEl.textContent = name || 'Your Company';
+
       renderStep3Tabs();
       updateConfigPreview();
     }
@@ -856,6 +872,33 @@
       const display = Object.assign({}, cfg);
       if (display.logo_base64) display.logo_base64 = '[base64 image data]';
       document.getElementById('config-preview').textContent = JSON.stringify(display, null, 2);
+    }
+
+    function buildBtpLink() {
+      const name  = state.name || 'Account';
+      const color = state.color.replace('#', '');
+      const TAB_KEYS = {
+        'tab-ps': 'ps', 'tab-max': 'max', 'tab-ea': 'ea',
+        'tab-cas': 'cas', 'tab-opp': 'opp'
+      };
+      const tabs = Object.keys(state.tabs)
+        .filter(k => state.tabs[k])
+        .map(k => TAB_KEYS[k])
+        .filter(Boolean);
+      // Always include raid, events, csm
+      tabs.push('raid', 'events', 'csm');
+      const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
+      const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
+      return base + '?' + params.toString();
+    }
+
+    function copyLink() {
+      const link = document.getElementById('btp-link-text').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+      });
     }
 
     function downloadConfig() {

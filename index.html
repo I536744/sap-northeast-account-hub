@@ -3,353 +3,481 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>One SAP — Account Hub</title>
+  <title>ONE SAP — Account Dashboard Hub</title>
   <style>
-    @font-face { font-family: "72"; font-weight: 300; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2"); }
-    @font-face { font-family: "72"; font-weight: 400; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2"); }
-    @font-face { font-family: "72"; font-weight: 700; font-style: normal; src: url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2"); }
+    @font-face{font-family:"72";font-weight:300;src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2");}
+    @font-face{font-family:"72";font-weight:400;src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2");}
+    @font-face{font-family:"72";font-weight:700;src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2");}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"72",Arial,sans-serif;background:#F5F6F7;min-height:100vh;}
 
-    body {
-      font-family: "72", Arial, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #00144A 0%, #002A86 60%, #0070F2 100%);
-      background-attachment: fixed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 24px;
+    /* ── Nav ── */
+    nav{
+      background:#fff;
+      border-bottom:1px solid #E0E0E0;
+      height:48px;
+      display:flex;align-items:center;
+      padding:0 28px;
+      justify-content:space-between;
+      position:sticky;top:0;z-index:200;
+    }
+    .nav-left{display:flex;align-items:center;gap:10px;}
+    .nav-sap-logo{height:28px;}
+    .nav-divider{width:1px;height:20px;background:#E0E0E0;}
+    .nav-title{font-size:15px;font-weight:700;color:#1A1A1A;letter-spacing:-.2px;}
+    .nav-right{display:flex;align-items:center;gap:16px;}
+    .nav-welcome{font-size:13px;color:#555;}
+    .nav-user-dot{
+      width:30px;height:30px;
+      background:#0057D2;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;font-weight:700;color:#fff;
+      flex-shrink:0;
     }
 
-    img.sap-logo { height: 48px; }
-
-    .title { text-align: center; color: #fff; font-size: 32px; font-weight: 700; }
-    .subtitle { color: rgba(255,255,255,0.6); font-size: 14px; text-align: center; margin-top: 6px; }
-
-    .lookup {
-      width: 100%;
-      max-width: 420px;
-      padding: 0 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    /* ── Hero ── */
+    .hero{
+      background:#2E6BE5;
+      padding:52px 24px 68px;
+      text-align:center;
+    }
+    .hero h1{
+      font-size:56px;font-weight:700;color:#fff;
+      letter-spacing:-1.5px;line-height:1.05;
+      margin-bottom:10px;
+    }
+    .hero-sub{font-size:15px;color:rgba(255,255,255,.8);margin-bottom:8px;}
+    .hero-blurb{
+      font-size:13px;color:rgba(255,255,255,.6);
+      max-width:520px;margin:0 auto 30px;line-height:1.6;
     }
 
-    /* ── Dropdown trigger ── */
-    .dropdown { position: relative; width: 100%; }
+    /* ── Search pill ── */
+    .search-wrap{max-width:640px;margin:0 auto;position:relative;}
+    .search-pill{
+      background:#fff;border-radius:100px;
+      display:flex;align-items:center;
+      box-shadow:0 2px 20px rgba(0,0,0,.2);
+      overflow:visible;
+    }
+    .pill-label{
+      padding:0 18px;height:50px;
+      font-size:14px;font-weight:700;color:#0057D2;
+      border-right:1px solid #E8E8E8;
+      display:flex;align-items:center;gap:5px;
+      white-space:nowrap;cursor:pointer;flex-shrink:0;border-radius:100px 0 0 100px;
+    }
+    .pill-label svg{opacity:.55;}
+    #dd-btn{
+      flex:1;height:50px;padding:0 14px;
+      background:transparent;border:none;
+      font-size:14px;font-family:"72",Arial,sans-serif;
+      color:#999;cursor:pointer;text-align:left;outline:none;
+    }
+    #dd-btn.has-val{color:#1A1A1A;}
+    .pill-search-ico{
+      width:50px;height:50px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+    }
+    .pill-search-ico svg{color:#0057D2;}
 
-    #dd-btn {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 13px 16px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 10px;
-      color: rgba(255,255,255,0.45);
-      font-size: 15px;
-      cursor: pointer;
-      text-align: left;
-      transition: border-color .15s, background .15s;
-      gap: 8px;
+    /* dropdown */
+    #dd-panel{
+      display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;
+      background:#fff;border:1px solid #E0E0E0;border-radius:14px;
+      box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:300;overflow:hidden;
     }
-    #dd-btn.has-value { color: #fff; }
-    #dd-btn:hover, #dd-btn.open {
-      border-color: #0070F2;
-      background: rgba(255,255,255,0.15);
+    #dd-panel.open{display:block;}
+    #dd-search{
+      width:100%;padding:12px 18px;
+      border:none;border-bottom:1px solid #F0F0F0;
+      font-size:13px;font-family:"72",Arial,sans-serif;
+      outline:none;background:#FAFAFA;color:#1A1A1A;
     }
-    #dd-btn .chevron {
-      flex-shrink: 0;
-      width: 16px;
-      height: 16px;
-      opacity: 0.6;
-      transition: transform .2s;
+    #dd-search::placeholder{color:#aaa;}
+    #dd-list{max-height:280px;overflow-y:auto;}
+    #dd-list::-webkit-scrollbar{width:4px;}
+    #dd-list::-webkit-scrollbar-thumb{background:#DDD;border-radius:2px;}
+    .dd-item{
+      padding:11px 18px;cursor:pointer;font-size:13px;color:#1A1A1A;
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      border-bottom:1px solid #F5F5F5;
     }
-    #dd-btn.open .chevron { transform: rotate(180deg); }
+    .dd-item:last-child{border-bottom:none;}
+    .dd-item:hover,.dd-item.active{background:#EEF4FF;}
+    .dd-item .item-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .dd-item mark{background:none;color:#0057D2;font-weight:700;}
+    .live-pill{
+      font-size:10px;font-weight:700;color:#fff;
+      background:#0057D2;border-radius:100px;padding:2px 8px;white-space:nowrap;
+    }
+    #dd-empty{padding:14px 18px;font-size:13px;color:#aaa;text-align:center;display:none;}
 
-    /* ── Dropdown panel ── */
-    #dd-panel {
-      display: none;
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0; right: 0;
-      background: #001A5C;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
-      z-index: 200;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    #go-btn{
+      display:none;margin:14px auto 0;
+      background:#fff;color:#0057D2;
+      border:2px solid #fff;border-radius:100px;
+      padding:11px 30px;font-size:14px;font-weight:700;
+      font-family:"72",Arial,sans-serif;cursor:pointer;
+      transition:background .15s;
     }
-    #dd-panel.open { display: block; }
+    #go-btn:hover{background:#E8F1FD;}
+    #go-btn.show{display:block;}
 
-    #dd-search {
-      width: 100%;
-      padding: 11px 14px;
-      background: rgba(255,255,255,0.07);
-      border: none;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      color: #fff;
-      font-size: 13px;
-      outline: none;
-    }
-    #dd-search::placeholder { color: rgba(255,255,255,0.35); }
+    /* ── Body ── */
+    .body{max-width:860px;margin:40px auto 80px;padding:0 28px;}
 
-    #dd-list {
-      max-height: 240px;
-      overflow-y: auto;
+    .section-row{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:16px;
     }
-    #dd-list::-webkit-scrollbar { width: 4px; }
-    #dd-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .section-row h2{font-size:18px;font-weight:700;color:#1A1A1A;}
+    .support-link{
+      font-size:13px;color:#0057D2;text-decoration:none;
+      display:flex;align-items:center;gap:5px;
+    }
+    .support-link:hover{text-decoration:underline;}
 
-    .dd-item {
-      padding: 10px 14px;
-      cursor: pointer;
-      font-size: 13px;
-      color: rgba(255,255,255,0.85);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    /* ── Portfolio card (collapsible) ── */
+    .portfolio-outer{
+      background:#fff;border:1px solid #E5E5E5;border-radius:14px;
+      margin-bottom:10px;overflow:hidden;
     }
-    .dd-item:last-child { border-bottom: none; }
-    .dd-item:hover, .dd-item.active { background: rgba(0,112,242,0.2); color: #fff; }
-    .dd-item .item-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .dd-item .item-sub { font-size: 11px; color: rgba(255,255,255,0.38); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
-    .dd-item mark { background: none; color: #BDD9FF; font-weight: 700; }
-    .live-badge {
-      font-size: 10px;
-      font-weight: 700;
-      color: #BDD9FF;
-      white-space: nowrap;
-      flex-shrink: 0;
+    .portfolio-header{
+      padding:18px 22px;cursor:pointer;
+      display:flex;align-items:center;gap:14px;
+      transition:background .12s;
     }
-
-    #dd-empty {
-      padding: 14px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.4);
-      text-align: center;
-      display: none;
+    .portfolio-header:hover{background:#FAFAFA;}
+    .port-icon{
+      width:40px;height:40px;background:#EEF4FF;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
     }
-
-    /* ── CTA button ── */
-    #enter-btn {
-      width: 100%;
-      background: #0070F2;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: "72", Arial, sans-serif;
-      cursor: pointer;
-      letter-spacing: 0.2px;
-      box-shadow: 0 4px 20px rgba(0,112,242,0.45);
-      transition: background .15s, box-shadow .15s, opacity .15s;
+    .port-icon svg{color:#0057D2;}
+    .port-label{flex:1;}
+    .port-label strong{font-size:15px;color:#1A1A1A;display:block;}
+    .port-label span{font-size:12px;color:#888;}
+    .port-chevron{color:#C0C0C0;transition:transform .2s;}
+    .port-chevron.open{transform:rotate(90deg);}
+    .portfolio-items{display:none;border-top:1px solid #F0F0F0;}
+    .portfolio-items.open{display:block;}
+    .port-item{
+      padding:14px 22px 14px 76px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid #F5F5F5;text-decoration:none;
+      transition:background .12s;
     }
-    #enter-btn:hover:not(:disabled) { background: #0040B0; box-shadow: 0 6px 24px rgba(0,112,242,0.6); }
-    #enter-btn:disabled { opacity: 0.3; cursor: default; box-shadow: none; }
-
-    #create-btn {
-      display: block;
-      width: 100%;
-      padding: 13px 20px;
-      background: rgba(0,112,242,0.12);
-      border: 1.5px solid rgba(0,112,242,0.5);
-      border-radius: 10px;
-      color: #BDD9FF;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: "72", Arial, sans-serif;
-      text-align: center;
-      text-decoration: none;
-      letter-spacing: 0.2px;
-      transition: background .15s, border-color .15s;
-    }
-    #create-btn:hover {
-      background: rgba(0,112,242,0.25);
-      border-color: #0070F2;
-      color: #fff;
+    .port-item:last-child{border-bottom:none;}
+    .port-item:hover{background:#F5F9FF;}
+    .port-item-name{font-size:14px;font-weight:600;color:#1A1A1A;}
+    .port-item-sub{font-size:12px;color:#888;margin-top:2px;}
+    .port-item-arrow{color:#C0C0C0;}
+    .port-empty{
+      padding:18px 22px 18px 76px;
+      font-size:13px;color:#AAA;font-style:italic;
     }
 
-    #msg { font-size: 12px; min-height: 18px; text-align: center; color: rgba(255,255,255,0.5); }
-    #msg.error { color: #FF8A80; }
-    #msg.ok { color: #69F0AE; }
+    /* ── All live dashboards ── */
+    .account-card{
+      background:#fff;border:1px solid #E5E5E5;border-radius:12px;
+      padding:17px 22px;display:flex;align-items:center;gap:14px;
+      text-decoration:none;margin-bottom:10px;
+      transition:box-shadow .15s,border-color .15s;cursor:pointer;
+    }
+    .account-card:hover{box-shadow:0 2px 14px rgba(0,0,0,.09);border-color:#C5D9F7;}
+    .card-icon{
+      width:40px;height:40px;background:#EEF4FF;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .card-icon svg{color:#0057D2;}
+    .card-body{flex:1;min-width:0;}
+    .card-name{font-size:14px;font-weight:700;color:#1A1A1A;}
+    .card-sub{font-size:12px;color:#888;margin-top:2px;}
+    .card-arrow{color:#C8C8C8;}
+
+    /* ── Onboard card ── */
+    .onboard-card{
+      background:#fff;border:1.5px dashed #C5D9F7;border-radius:12px;
+      padding:17px 22px;display:flex;align-items:center;gap:14px;
+      text-decoration:none;margin-bottom:10px;
+      transition:border-color .15s,background .15s;
+    }
+    .onboard-card:hover{border-color:#0057D2;background:#F5F9FF;}
+    .onboard-icon{
+      width:40px;height:40px;background:#EEF4FF;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;font-weight:300;color:#0057D2;flex-shrink:0;
+    }
+    .onboard-label{font-size:14px;font-weight:600;color:#0057D2;}
+    .onboard-sub{font-size:12px;color:#888;margin-top:2px;}
+
+    .section-gap{margin-top:32px;}
   </style>
 </head>
 <body>
 
-  <img class="sap-logo" src="./sap-logo.svg" alt="SAP">
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-left">
+    <img class="nav-sap-logo" src="./sap-logo.svg" alt="SAP">
+    <div class="nav-divider"></div>
+    <span class="nav-title">ONE SAP</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-welcome" id="welcome-msg"></span>
+    <div class="nav-user-dot" id="user-initials">?</div>
+  </div>
+</nav>
 
-  <div style="text-align:center">
-    <div class="title">One SAP</div>
-    <div class="subtitle">Account Dashboard Hub</div>
+<!-- ── Hero ── -->
+<div class="hero">
+  <h1>ONE SAP</h1>
+  <div class="hero-sub">Account Dashboard Hub</div>
+  <div class="hero-blurb">
+    One platform for your SAP account engagement data — initiatives, RAID, EA workloads, milestones, and more. Built for MaxAttention &amp; Premium Engagement accounts.
   </div>
 
-  <div class="lookup">
-    <div class="dropdown">
-      <button id="dd-btn" onclick="toggleDropdown()">
-        <span id="dd-label">Select an account…</span>
-        <svg class="chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 6l4 4 4-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div id="dd-panel">
-        <input id="dd-search" type="text" placeholder="Search accounts…"
-               autocomplete="off" spellcheck="false">
-        <div id="dd-list"></div>
-        <div id="dd-empty">No accounts found</div>
+  <div class="search-wrap">
+    <div class="search-pill">
+      <div class="pill-label" onclick="openDropdown()">
+        Account
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <button id="dd-btn" onclick="toggleDropdown()">Search for customer name…</button>
+      <div class="pill-search-ico" onclick="toggleDropdown()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </div>
     </div>
+    <div id="dd-panel">
+      <input id="dd-search" type="text" placeholder="Type to filter accounts…" autocomplete="off" spellcheck="false">
+      <div id="dd-list"></div>
+      <div id="dd-empty">No matching accounts</div>
+    </div>
+  </div>
 
-    <button id="enter-btn" onclick="goToDashboard()" disabled>Go to Dashboard →</button>
-    <div id="msg"></div>
-    <a href="https://ne-onesap-template.cfapps.us10.hana.ondemand.com" id="create-btn">
-      + Add data to create dashboard for your account
+  <button id="go-btn" onclick="goToDashboard()">Open Dashboard →</button>
+</div>
+
+<!-- ── Body ── -->
+<div class="body">
+
+  <div class="section-row">
+    <h2>Dashboards</h2>
+    <a href="mailto:alexandra.coyle@sap.com?subject=ONE SAP Support" class="support-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Need Support?
     </a>
   </div>
 
-  <script>
-    let allAccounts = [];
-    let customers   = [];
-    let selected    = null;
-    let activeIdx   = -1;
-    let isOpen      = false;
-    let currentMatches = [];  // holds current rendered accounts by index
+  <!-- My Portfolio -->
+  <div class="portfolio-outer">
+    <div class="portfolio-header" onclick="togglePortfolio()">
+      <div class="port-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      </div>
+      <div class="port-label">
+        <strong>My Portfolio</strong>
+        <span id="portfolio-sub">Your assigned accounts</span>
+      </div>
+      <svg class="port-chevron" id="port-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="portfolio-items" id="portfolio-items">
+      <div class="port-empty" id="portfolio-loading">Loading your accounts…</div>
+    </div>
+  </div>
 
-    Promise.all([
-      fetch('./accounts.json').then(r => r.json()),
-      fetch('./customers.json').then(r => r.json())
-    ]).then(([accs, custs]) => {
-      allAccounts = accs;
-      customers   = custs;
-    });
+  <!-- All live dashboards -->
+  <div class="section-gap">
+    <div class="section-row" style="margin-bottom:14px;">
+      <h2 style="font-size:15px;color:#555;font-weight:600;">All Live Dashboards</h2>
+    </div>
+    <div id="all-cards"></div>
+  </div>
 
-    const ddBtn    = document.getElementById('dd-btn');
-    const ddPanel  = document.getElementById('dd-panel');
-    const ddSearch = document.getElementById('dd-search');
-    const ddList   = document.getElementById('dd-list');
-    const ddEmpty  = document.getElementById('dd-empty');
-    const ddLabel  = document.getElementById('dd-label');
-    const enterBtn = document.getElementById('enter-btn');
-    const msg      = document.getElementById('msg');
+  <!-- Onboard -->
+  <a href="./onboard.html" class="onboard-card">
+    <div class="onboard-icon">+</div>
+    <div>
+      <div class="onboard-label">Set up a new account dashboard</div>
+      <div class="onboard-sub">Configure branding, choose tabs, and get your BTP app link</div>
+    </div>
+  </a>
 
-    function toggleDropdown() {
-      isOpen ? closeDropdown() : openDropdown();
-    }
+</div>
 
-    function openDropdown() {
-      isOpen = true;
-      ddBtn.classList.add('open');
-      ddPanel.classList.add('open');
-      ddSearch.value = '';
-      renderList('');
-      setTimeout(() => ddSearch.focus(), 50);
-    }
+<script>
+  let allAccounts = [];
+  let customers   = [];
+  let userEmail   = null;
+  let selected    = null;
+  let isOpen      = false;
+  let activeIdx   = -1;
+  let currentMatches = [];
+  let portfolioOpen  = true;
 
-    function closeDropdown() {
-      isOpen = false;
-      ddBtn.classList.remove('open');
-      ddPanel.classList.remove('open');
-      activeIdx = -1;
-    }
+  // Load data + user info in parallel
+  Promise.all([
+    fetch('./accounts.json').then(r => r.json()),
+    fetch('./customers.json').then(r => r.json()),
+    fetch('/user-api/currentUser').then(r => r.ok ? r.json() : null).catch(() => null)
+  ]).then(([accs, custs, user]) => {
+    allAccounts = accs;
+    customers   = custs;
 
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.dropdown')) closeDropdown();
-    });
-
-    ddSearch.addEventListener('input', () => {
-      activeIdx = -1;
-      renderList(ddSearch.value.trim());
-    });
-
-    ddSearch.addEventListener('keydown', e => {
-      const items = ddList.querySelectorAll('.dd-item');
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        activeIdx = Math.min(activeIdx + 1, items.length - 1);
-        highlightItem(items);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        activeIdx = Math.max(activeIdx - 1, 0);
-        highlightItem(items);
-      } else if (e.key === 'Enter') {
-        if (activeIdx >= 0 && items[activeIdx]) items[activeIdx].click();
-      } else if (e.key === 'Escape') {
-        closeDropdown();
-      }
-    });
-
-    function renderList(q) {
-      const lower = q.toLowerCase();
-      currentMatches = q.length === 0
-        ? allAccounts.slice(0, 50)
-        : allAccounts.filter(a => a.name.toLowerCase().includes(lower)).slice(0, 50);
-
-      currentMatches.sort((a, b) => {
-        const aLive = customers.some(c => c.name.toLowerCase() === a.name.toLowerCase()) ? 0 : 1;
-        const bLive = customers.some(c => c.name.toLowerCase() === b.name.toLowerCase()) ? 0 : 1;
-        return aLive - bLive;
-      });
-
-      if (!currentMatches.length) {
-        ddList.innerHTML = '';
-        ddEmpty.style.display = 'block';
-        return;
-      }
-      ddEmpty.style.display = 'none';
-
-      ddList.innerHTML = currentMatches.map((a, i) => {
-        const safeName = escHtml(a.name);
-        const nameHtml = q ? safeName.replace(new RegExp(`(${escRe(q)})`, 'gi'), '<mark>$1</mark>') : safeName;
-        const live = customers.find(c => c.name.toLowerCase() === a.name.toLowerCase());
-        const sub  = a.parent && a.parent !== a.name ? escHtml(a.parent) : '';
-        return `<div class="dd-item" data-idx="${i}">
-          <span class="item-name">${nameHtml}</span>
-          ${sub ? `<span class="item-sub">${sub}</span>` : ''}
-          ${live ? '<span class="live-badge">● LIVE</span>' : ''}
-        </div>`;
-      }).join('');
-
-      ddList.querySelectorAll('.dd-item').forEach((el, i) => {
-        el.addEventListener('click', () => selectAccount(currentMatches[i]));
-      });
-    }
-
-    function highlightItem(items) {
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
-      if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
-    }
-
-    function selectAccount(a) {
-      selected = a;
-      ddLabel.textContent = a.name;
-      ddBtn.classList.add('has-value');
-      closeDropdown();
-      enterBtn.disabled = false;
-      msg.className = '';
-      msg.textContent = '';
-    }
-
-    function goToDashboard() {
-      if (!selected) return;
-      const live = customers.find(c => c.name.toLowerCase() === selected.name.toLowerCase());
-      if (live) {
-        msg.className = 'ok';
-        msg.textContent = 'Opening ' + live.name + '…';
-        setTimeout(() => { window.location.href = live.url; }, 250);
-      } else {
-        window.location.href = './onboard.html?account=' + encodeURIComponent(selected.name);
+    if (user) {
+      userEmail = (user.email || '').toLowerCase();
+      const firstName = user.firstname || (userEmail ? userEmail.split('@')[0] : '');
+      if (firstName) {
+        document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
+        const initials = firstName.charAt(0).toUpperCase() +
+          (user.lastname ? user.lastname.charAt(0).toUpperCase() : '');
+        document.getElementById('user-initials').textContent = initials || firstName.charAt(0).toUpperCase();
       }
     }
 
-    function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  </script>
+    renderPortfolio();
+    renderAllCards();
+  });
+
+  // ── Portfolio ──
+  function renderPortfolio() {
+    const items = document.getElementById('portfolio-items');
+    const sub   = document.getElementById('portfolio-sub');
+
+    // Match by email in team_emails, or show all if no user
+    const mine = userEmail
+      ? customers.filter(c => (c.team_emails || []).map(e => e.toLowerCase()).includes(userEmail))
+      : customers;
+
+    if (!mine.length) {
+      items.innerHTML = `<div class="port-empty">No accounts assigned to your email yet. <a href="./onboard.html" style="color:#0057D2;">Set one up →</a></div>`;
+      sub.textContent = '0 accounts';
+      return;
+    }
+
+    sub.textContent = mine.length + (mine.length === 1 ? ' account' : ' accounts');
+    items.innerHTML = mine.map(c => `
+      <a href="${escHtml(c.url)}" class="port-item" target="_blank">
+        <div>
+          <div class="port-item-name">${escHtml(c.name)}</div>
+          <div class="port-item-sub">${escHtml(c.subtitle || 'OneSAP Dashboard')} · ${escHtml(c.region || 'Northeast')}</div>
+        </div>
+        <svg class="port-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>`).join('');
+  }
+
+  function togglePortfolio() {
+    portfolioOpen = !portfolioOpen;
+    document.getElementById('portfolio-items').classList.toggle('open', portfolioOpen);
+    document.getElementById('port-chevron').classList.toggle('open', portfolioOpen);
+  }
+  // Open by default
+  document.getElementById('portfolio-items').classList.add('open');
+  document.getElementById('port-chevron').classList.add('open');
+
+  // ── All live cards ──
+  function renderAllCards() {
+    const c = document.getElementById('all-cards');
+    if (!customers.length) { c.innerHTML = ''; return; }
+    c.innerHTML = customers.map(cust => `
+      <a href="${escHtml(cust.url)}" class="account-card" target="_blank">
+        <div class="card-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="card-name">${escHtml(cust.name)}</div>
+          <div class="card-sub">${escHtml(cust.industry || '')}${cust.industry && cust.region ? ' · ' : ''}${escHtml(cust.region || '')} · Live</div>
+        </div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>`).join('');
+  }
+
+  // ── Search dropdown ──
+  const ddBtn    = document.getElementById('dd-btn');
+  const ddPanel  = document.getElementById('dd-panel');
+  const ddSearch = document.getElementById('dd-search');
+  const ddList   = document.getElementById('dd-list');
+  const ddEmpty  = document.getElementById('dd-empty');
+  const goBtn    = document.getElementById('go-btn');
+
+  function toggleDropdown() { isOpen ? closeDropdown() : openDropdown(); }
+  function openDropdown() {
+    isOpen = true;
+    ddPanel.classList.add('open');
+    ddSearch.value = '';
+    renderList('');
+    setTimeout(() => ddSearch.focus(), 40);
+  }
+  function closeDropdown() {
+    isOpen = false;
+    ddPanel.classList.remove('open');
+    activeIdx = -1;
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) closeDropdown();
+  });
+
+  ddSearch.addEventListener('input', () => { activeIdx = -1; renderList(ddSearch.value.trim()); });
+  ddSearch.addEventListener('keydown', e => {
+    const items = ddList.querySelectorAll('.dd-item');
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, items.length-1); highlight(items); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); highlight(items); }
+    else if (e.key === 'Enter' && activeIdx >= 0 && items[activeIdx]) items[activeIdx].click();
+    else if (e.key === 'Escape') closeDropdown();
+  });
+
+  function renderList(q) {
+    const lower = q.toLowerCase();
+    currentMatches = q ? allAccounts.filter(a => a.name.toLowerCase().includes(lower)).slice(0,60)
+                       : allAccounts.slice(0,60);
+    currentMatches.sort((a,b) => {
+      const aL = customers.some(c => c.name.toLowerCase() === a.name.toLowerCase()) ? 0 : 1;
+      const bL = customers.some(c => c.name.toLowerCase() === b.name.toLowerCase()) ? 0 : 1;
+      return aL - bL;
+    });
+    if (!currentMatches.length) { ddList.innerHTML=''; ddEmpty.style.display='block'; return; }
+    ddEmpty.style.display = 'none';
+    ddList.innerHTML = currentMatches.map((a, i) => {
+      const safe = escHtml(a.name);
+      const nameHtml = q ? safe.replace(new RegExp(`(${escRe(q)})`, 'gi'), '<mark>$1</mark>') : safe;
+      const live = customers.find(c => c.name.toLowerCase() === a.name.toLowerCase());
+      return `<div class="dd-item" data-idx="${i}">
+        <span class="item-name">${nameHtml}</span>
+        ${live ? '<span class="live-pill">● LIVE</span>' : ''}
+      </div>`;
+    }).join('');
+    ddList.querySelectorAll('.dd-item').forEach((el, i) => {
+      el.addEventListener('click', () => selectAccount(currentMatches[i]));
+    });
+  }
+
+  function highlight(items) {
+    items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+    if (items[activeIdx]) items[activeIdx].scrollIntoView({ block:'nearest' });
+  }
+
+  function selectAccount(a) {
+    selected = a;
+    ddBtn.textContent = a.name;
+    ddBtn.classList.add('has-val');
+    closeDropdown();
+    goBtn.classList.add('show');
+    const live = customers.find(c => c.name.toLowerCase() === a.name.toLowerCase());
+    goBtn.textContent = live ? 'Open Dashboard →' : 'Set Up Dashboard →';
+  }
+
+  function goToDashboard() {
+    if (!selected) return;
+    const live = customers.find(c => c.name.toLowerCase() === selected.name.toLowerCase());
+    if (live) window.location.href = live.url;
+    else window.location.href = './onboard.html?account=' + encodeURIComponent(selected.name);
+  }
+
+  function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+</script>
 </body>
 </html>
