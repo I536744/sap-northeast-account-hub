@@ -849,7 +849,6 @@
       if (state.tabs['tab-raid'])     tabs.push('raid');
       const base = `https://onesap-${slug}.cfapps.us10.hana.ondemand.com/`;
       const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
-      if (state.logoCompressed) params.set('logo', state.logoCompressed);
       return base + '?' + params.toString();
     }
 
