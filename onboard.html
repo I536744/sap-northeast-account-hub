@@ -207,7 +207,7 @@
     .always-on{font-size:11px;color:#AAA;margin-bottom:12px;}
     .always-on strong{color:var(--muted);}
     #tabs-preview{display:flex;flex-wrap:wrap;gap:6px;}
-    .tab-pill{background:var(--blue-light);border:1px solid #C5D9F7;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--blue);}
+    .tab-pill{background:#0057D2;border:none;border-radius:20px;padding:6px 16px;font-size:12px;font-weight:700;color:#fff;display:inline-block;}
     #config-preview{font-size:10px;color:var(--muted);font-family:monospace;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto;}
 
     /* ── Link box ── */
@@ -252,7 +252,6 @@
     </div>
     <div class="nav-right">
       <a href="./index.html" class="nav-back">← Hub</a>
-      <a href="mailto:alexandra.coyle@sap.com" class="support-link">Need Support?</a>
       <button class="help-btn" onclick="document.getElementById('help-modal').classList.add('open')">?</button>
     </div>
   </nav>
@@ -320,7 +319,7 @@
           <label>Company Logo</label>
           <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
             <input type="file" id="logo-file" accept="image/*" onchange="handleLogo(this)" style="display:none">
-            <img id="logo-preview" src="" alt="logo" style="mix-blend-mode:screen;">
+            <img id="logo-preview" src="" alt="logo">
             <div class="upload-ico" id="upload-ico">📁</div>
             <div class="upload-hint" id="upload-hint">Click to upload logo — background will be removed automatically</div>
             <div class="clear-logo" id="clear-logo" onclick="event.stopPropagation();clearLogo()">Remove</div>
@@ -426,7 +425,7 @@
 
           <div class="svc-group">
             <div class="svc-group-header" onclick="toggleSvc('max')">
-              <div class="custom-check checked" id="check-max">
+              <div class="custom-check" id="check-max">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div>
@@ -439,7 +438,7 @@
 
           <div class="svc-group">
             <div class="svc-group-header" onclick="toggleSvc('cas')">
-              <div class="custom-check checked" id="check-cas">
+              <div class="custom-check" id="check-cas">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div>
@@ -448,6 +447,19 @@
               </div>
             </div>
             <div class="svc-sub" id="sub-cas"></div>
+          </div>
+
+          <div class="svc-group">
+            <div class="svc-group-header" onclick="toggleSvc('ea')">
+              <div class="custom-check" id="check-ea">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div class="svc-name">Enterprise Architecture (EA)</div>
+                <div class="svc-desc">Architecture reviews, roadmaps, and EA-led workloads</div>
+              </div>
+            </div>
+            <div class="svc-sub" id="sub-ea"></div>
           </div>
 
         </div>
@@ -469,10 +481,6 @@
               <div class="sub-check checked" id="check-tab-cas"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span>Cloud Application Services</span>
             </div>
-            <div class="svc-sub-item" onclick="toggleTab('tab-ea')">
-              <div class="sub-check checked" id="check-tab-ea"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <span>Enterprise Architecture (EA)</span>
-            </div>
             <div class="svc-sub-item" onclick="toggleTab('tab-opp')">
               <div class="sub-check checked" id="check-tab-opp"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span>Opportunities &amp; Roadmap</span>
@@ -491,13 +499,6 @@
             <div style="margin-top:12px;font-size:11px;color:#AAA;line-height:1.6;">
               Always included: Summary · RAID Log · CSM Contacts · Events
             </div>
-          </div>
-        </div>
-
-        <div class="preview-panel">
-          <div class="preview-label">Config Preview</div>
-          <div style="padding:14px;">
-            <pre id="config-preview"></pre>
           </div>
         </div>
       </div>
@@ -540,6 +541,10 @@
               Add initiatives, RAID items, and contacts to populate your dashboard.
             </div>
           </div>
+        </div>
+        <div style="margin-top:12px;background:#FFF8E1;border:1px solid #FFD54F;border-radius:10px;padding:14px 16px;">
+          <p style="font-size:13px;font-weight:700;color:#5D4037;margin-bottom:6px;">⚠ Important: All data must be entered manually</p>
+          <p style="font-size:12px;color:#795548;line-height:1.6;">Once your dashboard is open, you will need to manually enter all <strong>initiatives</strong>, <strong>RAID tracker items</strong>, <strong>CSM contacts</strong>, and any other data. The dashboard does not pull data automatically — everything is entered directly inside the tool.</p>
         </div>
       </div>
 
@@ -600,9 +605,9 @@
       name: '',
       logoBase64: null,
       color: '#0057D2',
-      services: { ps: false, max: false, cas: false },
+      services: { ps: false, max: false, cas: false, ea: false },
       subServices: {},
-      tabs: { 'tab-ps': true, 'tab-max': true, 'tab-ea': true, 'tab-cas': true, 'tab-opp': true }
+      tabs: { 'tab-ps': true, 'tab-max': true, 'tab-cas': true, 'tab-opp': true }
     };
 
     // Pre-fill account name from URL ?account=
@@ -786,7 +791,6 @@
       const TAB_LABELS = {
         'tab-ps': 'Professional Services',
         'tab-max': 'MaxAttention',
-        'tab-ea': 'Enterprise Architecture',
         'tab-cas': 'Cloud App Services',
         'tab-opp': 'Opportunities & Roadmap'
       };
@@ -800,14 +804,13 @@
     }
 
     function renderStep3Tabs() {
-      const TAB_SHORT = {
-        'tab-ps': 'PS', 'tab-max': 'MAX', 'tab-ea': 'EA', 'tab-cas': 'CAS', 'tab-opp': 'Opp'
-      };
       const color = state.color;
       const tabs = ['Summary'];
-      ['tab-ps','tab-max','tab-ea','tab-cas','tab-opp'].forEach(k => {
-        if (state.tabs[k]) tabs.push(TAB_SHORT[k]);
-      });
+      if (state.services.ps  && state.tabs['tab-ps'])  tabs.push('PS');
+      if (state.services.max && state.tabs['tab-max']) tabs.push('MAX');
+      if (state.services.cas && state.tabs['tab-cas']) tabs.push('CAS');
+      if (state.services.ea)                           tabs.push('EA');
+      if (state.tabs['tab-opp'])                       tabs.push('Opp');
       tabs.push('RAID', 'Events', 'CSM');
       const c = document.getElementById('prev2-tabs');
       if (c) c.innerHTML = tabs.map((t,i) =>
@@ -843,24 +846,23 @@
     }
 
     function updateConfigPreview() {
+      const el = document.getElementById('config-preview');
+      if (!el) return;
       const cfg = buildConfig();
       const display = Object.assign({}, cfg);
       if (display.logo_base64) display.logo_base64 = '[base64 image data]';
-      document.getElementById('config-preview').textContent = JSON.stringify(display, null, 2);
+      el.textContent = JSON.stringify(display, null, 2);
     }
 
     function buildBtpLink() {
       const name  = state.name || 'Account';
       const color = state.color.replace('#', '');
-      const TAB_KEYS = {
-        'tab-ps': 'ps', 'tab-max': 'max', 'tab-ea': 'ea',
-        'tab-cas': 'cas', 'tab-opp': 'opp'
-      };
-      const tabs = Object.keys(state.tabs)
-        .filter(k => state.tabs[k])
-        .map(k => TAB_KEYS[k])
-        .filter(Boolean);
-      // Always include raid, events, csm
+      const tabs = [];
+      if (state.services.ps  && state.tabs['tab-ps'])  tabs.push('ps');
+      if (state.services.max && state.tabs['tab-max']) tabs.push('max');
+      if (state.services.cas && state.tabs['tab-cas']) tabs.push('cas');
+      if (state.services.ea)                           tabs.push('ea');
+      if (state.tabs['tab-opp'])                       tabs.push('opp');
       tabs.push('raid', 'events', 'csm');
       const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
       const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
