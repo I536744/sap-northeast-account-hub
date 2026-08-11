@@ -46,7 +46,7 @@
       padding: 0 24px;
     }
 
-    #account-input {
+    #account-select {
       width: 100%;
       padding: 13px 18px;
       background: rgba(255,255,255,0.1);
@@ -55,13 +55,25 @@
       font-size: 15px;
       color: #fff;
       outline: none;
-      text-align: center;
-      transition: border-color .15s, background .15s;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+      transition: border-color .15s, background-color .15s;
     }
-    #account-input::placeholder { color: rgba(255,255,255,0.4); }
-    #account-input:focus {
+    #account-select:focus {
       border-color: #4CB1FF;
-      background: rgba(255,255,255,0.15);
+      background-color: rgba(255,255,255,0.15);
+    }
+    #account-select option {
+      background: #002A86;
+      color: #fff;
+    }
+    #account-select option:disabled {
+      color: rgba(255,255,255,0.4);
     }
 
     #enter-btn {
@@ -85,12 +97,10 @@
       text-align: center;
       color: rgba(255,255,255,0.5);
     }
-    #msg.error { color: #FF8A80; }
   </style>
 </head>
 <body>
 
-  <!-- SAP wordmark -->
   <svg class="sap-logo" viewBox="0 0 72 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SAP">
     <rect width="72" height="36" rx="5" fill="#F0AB00"/>
     <text x="36" y="25" text-anchor="middle" font-family="Arial,sans-serif"
@@ -103,48 +113,44 @@
   </div>
 
   <div class="lookup">
-    <input id="account-input" type="text" placeholder="Enter account name…"
-           autocomplete="off" spellcheck="false">
-    <button id="enter-btn" onclick="goToDashboard()">Enter Dashboard →</button>
+    <select id="account-select">
+      <option value="" disabled selected>Select an account…</option>
+    </select>
+    <button id="enter-btn" onclick="goToDashboard()" disabled>Enter Dashboard →</button>
     <div id="msg"></div>
   </div>
 
   <script>
     let customers = [];
+    const sel = document.getElementById('account-select');
+    const btn = document.getElementById('enter-btn');
 
     fetch('./customers.json')
       .then(r => r.json())
-      .then(data => { customers = data; });
+      .then(data => {
+        customers = data;
+        data.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.slug;
+          opt.textContent = c.name + ' — ' + c.subtitle;
+          sel.appendChild(opt);
+        });
+      });
 
-    const input = document.getElementById('account-input');
-    const msg   = document.getElementById('msg');
+    sel.addEventListener('change', () => {
+      btn.disabled = !sel.value;
+      document.getElementById('msg').textContent = '';
+    });
 
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') goToDashboard();
-      msg.className = '';
-      msg.textContent = '';
+    sel.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && sel.value) goToDashboard();
     });
 
     function goToDashboard() {
-      const q = input.value.trim().toLowerCase();
-      if (!q) return;
-
-      const match = customers.find(c =>
-        c.name.toLowerCase() === q ||
-        c.slug.toLowerCase() === q ||
-        c.name.toLowerCase().includes(q)
-      );
-
-      if (match) {
-        msg.className = '';
-        msg.textContent = 'Opening ' + match.name + '…';
-        setTimeout(() => { window.location.href = match.url; }, 300);
-      } else {
-        msg.className = 'error';
-        msg.textContent = 'Account not found. Check the name and try again.';
-        input.focus();
-        input.select();
-      }
+      const match = customers.find(c => c.slug === sel.value);
+      if (!match) return;
+      document.getElementById('msg').textContent = 'Opening ' + match.name + '…';
+      setTimeout(() => { window.location.href = match.url; }, 250);
     }
   </script>
 </body>
