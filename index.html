@@ -28,14 +28,6 @@
     .nav-title{font-size:15px;font-weight:700;color:#1A1A1A;letter-spacing:-.2px;}
     .nav-right{display:flex;align-items:center;gap:16px;}
     .nav-welcome{font-size:13px;color:#0057D2;font-weight:700;}
-    .nav-user-dot{
-      width:30px;height:30px;
-      background:#0057D2;
-      border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      font-size:12px;font-weight:700;color:#fff;
-      flex-shrink:0;
-    }
     .help-btn{width:30px;height:30px;border-radius:50%;background:#EEF4FF;border:none;cursor:pointer;font-size:14px;font-weight:700;color:#0057D2;display:flex;align-items:center;justify-content:center;transition:background .15s;}
     .help-btn:hover{background:#D0E6FF;}
     .support-link{font-size:13px;color:#0057D2;text-decoration:none;}
@@ -367,9 +359,6 @@
       const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
       if (firstName) {
         document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
-        const initials = firstName.charAt(0).toUpperCase() +
-          (user.lastname ? user.lastname.charAt(0).toUpperCase() : '');
-        document.getElementById('user-initials').textContent = initials || firstName.charAt(0).toUpperCase();
       }
     }
 
