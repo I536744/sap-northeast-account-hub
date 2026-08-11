@@ -837,6 +837,7 @@
     function buildBtpLink() {
       const name  = state.name || 'Account';
       const color = state.color.replace('#', '');
+      const slug  = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       const tabs = ['summary', 'events'];
       if (state.services.ps)          tabs.push('ps');
       if (state.services.max)         tabs.push('max');
@@ -846,7 +847,7 @@
       if (state.tabs['tab-csm'])      tabs.push('csm');
       if (state.tabs['tab-onboard'])  tabs.push('onboard');
       if (state.tabs['tab-raid'])     tabs.push('raid');
-      const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
+      const base = `https://onesap-${slug}.cfapps.us10.hana.ondemand.com/`;
       const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
       if (state.logoCompressed) params.set('logo', state.logoCompressed);
       return base + '?' + params.toString();
