@@ -3,149 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SAP MaxAttention — Northeast Accounts</title>
+  <title>SAP MaxAttention — Northeast</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "72", "SAP72", Arial, sans-serif; background: #F5F6F7; color: #1D2D3E; min-height: 100vh; }
 
-    header {
-      background: #1D2D3E;
-      color: #fff;
-      padding: 0 32px;
-      height: 56px;
+    body {
+      font-family: "72", "SAP72", Arial, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #00144A 0%, #002A86 60%, #0070F2 100%);
+      background-attachment: fixed;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-    }
-    header h1 { font-size: 1rem; font-weight: 600; letter-spacing: .02em; }
-    header span { font-size: .8rem; opacity: .6; }
-
-    .hero {
-      background: #fff;
-      border-bottom: 1px solid #D9DBDD;
-      padding: 40px 32px 32px;
-    }
-    .hero h2 { font-size: 1.6rem; font-weight: 700; color: #0054A6; margin-bottom: 6px; }
-    .hero p { color: #556B82; font-size: .95rem; }
-
-    .search-wrap { padding: 24px 32px 0; }
-    #search {
-      width: 100%;
-      max-width: 480px;
-      padding: 10px 16px;
-      border: 1px solid #C0C2C4;
-      border-radius: 6px;
-      font-size: 1rem;
-      outline: none;
-    }
-    #search:focus {
-      border-color: #0054A6;
-      box-shadow: 0 0 0 2px rgba(0,84,166,.15);
+      justify-content: center;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-      padding: 24px 32px 48px;
-    }
+    svg.sap-logo { height: 48px; }
 
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.08);
-      border-top: 4px solid var(--accent);
-      overflow: hidden;
-      transition: box-shadow .15s;
-    }
-    .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.13); }
-
-    .card-body { padding: 20px 20px 16px; }
-    .card-name { font-size: 1.1rem; font-weight: 700; color: #1D2D3E; margin-bottom: 4px; }
-    .card-sub { font-size: .82rem; color: #556B82; margin-bottom: 12px; }
-    .card-meta { font-size: .78rem; color: #8A9BB0; margin-bottom: 16px; }
-
-    .card-link {
-      display: inline-block;
-      background: var(--accent);
+    .title {
+      text-align: center;
       color: #fff;
-      padding: 7px 18px;
-      border-radius: 4px;
-      font-size: .85rem;
-      font-weight: 600;
-      text-decoration: none;
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      text-align: center;
+      margin-top: -12px;
+    }
+
+    .lookup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 360px;
+      padding: 0 24px;
+    }
+
+    #account-input {
+      width: 100%;
+      padding: 13px 18px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      font-size: 15px;
+      color: #fff;
+      outline: none;
+      text-align: center;
+      transition: border-color .15s, background .15s;
+    }
+    #account-input::placeholder { color: rgba(255,255,255,0.4); }
+    #account-input:focus {
+      border-color: #4CB1FF;
+      background: rgba(255,255,255,0.15);
+    }
+
+    #enter-btn {
+      width: 100%;
+      background: #4CB1FF;
+      color: #00144A;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 32px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
       transition: opacity .15s;
     }
-    .card-link:hover { opacity: .85; }
+    #enter-btn:hover { opacity: 0.88; }
+    #enter-btn:disabled { opacity: 0.4; cursor: default; }
 
-    .no-results { padding: 40px 32px; color: #8A9BB0; font-size: .95rem; }
-
-    .count { padding: 12px 32px 0; font-size: .82rem; color: #8A9BB0; }
+    #msg {
+      font-size: 12px;
+      min-height: 18px;
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+    }
+    #msg.error { color: #FF8A80; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>SAP MaxAttention — Northeast</h1>
-    <span>Account Hub</span>
-  </header>
 
-  <div class="hero">
-    <h2>Northeast Accounts</h2>
-    <p>Select an account to open its OneSAP dashboard.</p>
+  <!-- SAP wordmark -->
+  <svg class="sap-logo" viewBox="0 0 72 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SAP">
+    <rect width="72" height="36" rx="5" fill="#F0AB00"/>
+    <text x="36" y="25" text-anchor="middle" font-family="Arial,sans-serif"
+          font-weight="900" font-size="22" fill="#fff" letter-spacing="1.5">SAP</text>
+  </svg>
+
+  <div style="text-align:center">
+    <div class="title">MaxAttention Northeast</div>
+    <div class="subtitle" style="margin-top:8px">Account Dashboard Hub</div>
   </div>
 
-  <div class="search-wrap">
-    <input id="search" type="text" placeholder="Search accounts…" oninput="filter(this.value)" autocomplete="off">
+  <div class="lookup">
+    <input id="account-input" type="text" placeholder="Enter account name…"
+           autocomplete="off" spellcheck="false">
+    <button id="enter-btn" onclick="goToDashboard()">Enter Dashboard →</button>
+    <div id="msg"></div>
   </div>
-
-  <div id="count" class="count"></div>
-  <div id="grid" class="grid"></div>
-  <div id="no-results" class="no-results" style="display:none">No accounts match your search.</div>
 
   <script>
-    let all = [];
+    let customers = [];
 
     fetch('./customers.json')
       .then(r => r.json())
-      .then(data => {
-        all = data;
-        render(all);
-      });
+      .then(data => { customers = data; });
 
-    function render(list) {
-      const grid = document.getElementById('grid');
-      const none = document.getElementById('no-results');
-      const count = document.getElementById('count');
+    const input = document.getElementById('account-input');
+    const msg   = document.getElementById('msg');
 
-      if (!list.length) {
-        grid.innerHTML = '';
-        none.style.display = '';
-        count.textContent = '';
-        return;
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') goToDashboard();
+      msg.className = '';
+      msg.textContent = '';
+    });
+
+    function goToDashboard() {
+      const q = input.value.trim().toLowerCase();
+      if (!q) return;
+
+      const match = customers.find(c =>
+        c.name.toLowerCase() === q ||
+        c.slug.toLowerCase() === q ||
+        c.name.toLowerCase().includes(q)
+      );
+
+      if (match) {
+        msg.className = '';
+        msg.textContent = 'Opening ' + match.name + '…';
+        setTimeout(() => { window.location.href = match.url; }, 300);
+      } else {
+        msg.className = 'error';
+        msg.textContent = 'Account not found. Check the name and try again.';
+        input.focus();
+        input.select();
       }
-
-      none.style.display = 'none';
-      count.textContent = list.length + (list.length === 1 ? ' account' : ' accounts');
-      grid.innerHTML = list.map(c => `
-        <div class="card" style="--accent:${c.accent}">
-          <div class="card-body">
-            <div class="card-name">${c.name}</div>
-            <div class="card-sub">${c.subtitle}</div>
-            <div class="card-meta">${c.industry} &middot; ${c.region}</div>
-            <a class="card-link" href="${c.url}" target="_blank">Open Dashboard &rarr;</a>
-          </div>
-        </div>`).join('');
-    }
-
-    function filter(q) {
-      const lower = q.toLowerCase().trim();
-      if (!lower) { render(all); return; }
-      render(all.filter(c =>
-        c.name.toLowerCase().includes(lower) ||
-        c.subtitle.toLowerCase().includes(lower) ||
-        c.industry.toLowerCase().includes(lower) ||
-        c.region.toLowerCase().includes(lower)
-      ));
     }
   </script>
 </body>
