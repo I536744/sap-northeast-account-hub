@@ -752,8 +752,9 @@
 
       // Step 3 BTP link + heading
       const btpLink = buildBtpLink();
+      const cleanUrl = getCleanUrl();
       const linkEl = document.getElementById('btp-link-text');
-      if (linkEl) linkEl.textContent = btpLink;
+      if (linkEl) linkEl.textContent = cleanUrl;
       const openBtn  = document.getElementById('open-dashboard-btn');
       const openBtn2 = document.getElementById('open-dashboard-btn2');
       if (openBtn)  openBtn.href  = btpLink;
@@ -847,13 +848,20 @@
       if (state.tabs['tab-csm'])      tabs.push('csm');
       if (state.tabs['tab-onboard'])  tabs.push('onboard');
       if (state.tabs['tab-raid'])     tabs.push('raid');
-      const base = `https://onesap-${slug}.cfapps.us10.hana.ondemand.com/`;
+      // Template URL (functional preview) — customer dedicated URL comes after deployment
+      const base = 'https://ne-onesap-template.cfapps.us10.hana.ondemand.com/';
       const params = new URLSearchParams({ name, color, tabs: tabs.join(',') });
       return base + '?' + params.toString();
     }
 
+    function getCleanUrl() {
+      const name = state.name || 'Account';
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      return `onesap-${slug}.cfapps.us10.hana.ondemand.com`;
+    }
+
     function copyLink() {
-      const link = document.getElementById('btp-link-text').textContent;
+      const link = buildBtpLink();
       navigator.clipboard.writeText(link).then(() => {
         const btn = document.getElementById('copy-btn');
         btn.textContent = 'Copied!';
