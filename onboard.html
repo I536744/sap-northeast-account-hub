@@ -660,8 +660,8 @@
           canvas.height = img.naturalHeight;
           canvas.getContext('2d').drawImage(img, 0, 0);
           state.logoBase64 = canvas.toDataURL('image/png');
-          // JPEG with white bg fill — sharp enough at 160px, small enough to fit in URL
-          const cw = Math.min(img.naturalWidth, 160);
+          // JPEG 100px wide, quality 0.75, white bg — fits in URL, sharp enough at 44px display
+          const cw = Math.min(img.naturalWidth, 100);
           const ch = Math.round(img.naturalHeight * (cw / img.naturalWidth));
           const cc = document.createElement('canvas');
           cc.width = cw; cc.height = ch;
@@ -669,7 +669,7 @@
           ctx2.fillStyle = '#ffffff';
           ctx2.fillRect(0, 0, cw, ch);
           ctx2.drawImage(img, 0, 0, cw, ch);
-          state.logoCompressed = cc.toDataURL('image/jpeg', 0.9);
+          state.logoCompressed = cc.toDataURL('image/jpeg', 0.75);
           state.logoBase64 = state.logoCompressed;
           showLogoPreview(state.logoBase64);
         };
@@ -865,32 +865,13 @@
     }
 
     async function openDashboard() {
-      const base = 'https://ne-onesap-template-dashboard.cfapps.us10.hana.ondemand.com/';
       const params = new URLSearchParams(buildBtpParams());
       if (state.logoCompressed) {
-        try {
-          const res = await fetch('https://ne-onesap-template-dashboard.cfapps.us10.hana.ondemand.com/api/logo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ logo: state.logoCompressed })
-          });
-          const data = await res.json();
-          if (data.token) params.set('logo_token', data.token);
-        } catch(e) {
-          // Fallback: tiny JPEG so URL fits within header limits
-          const fc = document.createElement('canvas');
-          fc.width = 100; fc.height = Math.round(100 * (state.logoNatH / state.logoNatW));
-          const fx = fc.getContext('2d');
-          fx.fillStyle = '#fff'; fx.fillRect(0, 0, fc.width, fc.height);
-          const tmp = new Image(); tmp.src = state.logoCompressed;
-          fx.drawImage(tmp, 0, 0, fc.width, fc.height);
-          const small = fc.toDataURL('image/jpeg', 0.7)
-            .replace(/^data:image\/[^;]+;base64,/, '')
-            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-          params.set('logo', small);
-        }
+        const b64 = state.logoCompressed
+          .replace(/^data:image\/[^;]+;base64,/, '')
+          .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        params.set('logo', b64);
       }
-      // Open via approuter URL (handles auth), pass params
       window.open('https://ne-onesap-template.cfapps.us10.hana.ondemand.com/?' + params.toString(), '_blank');
     }
 
