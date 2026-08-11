@@ -5,343 +5,303 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Dashboard Setup — One SAP</title>
   <style>
-    @font-face { font-family:"72"; font-weight:300; font-style:normal; src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2"); }
-    @font-face { font-family:"72"; font-weight:400; font-style:normal; src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2"); }
-    @font-face { font-family:"72"; font-weight:700; font-style:normal; src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2"); }
+    @font-face{font-family:"72";font-weight:300;src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Light.woff2") format("woff2");}
+    @font-face{font-family:"72";font-weight:400;src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Regular.woff2") format("woff2");}
+    @font-face{font-family:"72";font-weight:700;src:url("https://ui5.sap.com/resources/sap/ui/core/themes/base/fonts/72-Bold.woff2") format("woff2");}
 
-    :root {
-      --accent: #0070F2;
-      --accent-dark: #0040B0;
-      --accent-light: #BDD9FF;
-      --deep: #00144A;
-      --mid: #002A86;
-    }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body {
-      font-family:"72", Arial, sans-serif;
-      min-height:100vh;
-      background: linear-gradient(135deg, #00144A 0%, #002A86 60%, #0070F2 100%);
-      background-attachment:fixed;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:40px 20px 60px;
-      gap:28px;
-    }
+    :root{--blue:#0057D2;--blue-light:#EEF4FF;--border:#E0E0E0;--text:#1A1A1A;--muted:#666;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"72",Arial,sans-serif;background:#F5F6F7;min-height:100vh;display:flex;flex-direction:column;}
 
-    /* ── Top bar ── */
-    .topbar {
-      width:100%; max-width:900px;
-      display:flex; align-items:center; gap:14px;
+    /* ── Nav ── */
+    nav{
+      background:#fff;border-bottom:1px solid var(--border);
+      height:50px;display:flex;align-items:center;padding:0 28px;
+      justify-content:space-between;position:sticky;top:0;z-index:200;
     }
-    .topbar img { height:36px; }
-    .topbar-title { color:#fff; font-size:18px; font-weight:700; }
-    .topbar-sub { color:rgba(255,255,255,.55); font-size:12px; margin-top:2px; }
-    .back-link {
-      margin-left:auto; color:rgba(255,255,255,.6); font-size:13px;
-      text-decoration:none; display:flex; align-items:center; gap:5px;
-    }
-    .back-link:hover { color:#fff; }
-
-    /* ── Progress steps ── */
-    .steps {
-      display:flex; gap:0; align-items:center;
-      width:100%; max-width:420px;
-    }
-    .step {
-      display:flex; align-items:center; gap:8px; flex:1;
-      color:rgba(255,255,255,.35); font-size:12px; font-weight:600;
-    }
-    .step .dot {
-      width:28px; height:28px; border-radius:50%;
-      border:2px solid rgba(255,255,255,.25);
-      display:flex; align-items:center; justify-content:center;
-      font-size:12px; font-weight:700; flex-shrink:0;
-      transition: all .2s;
-    }
-    .step.active .dot { border-color:var(--accent); background:var(--accent); color:#fff; }
-    .step.done .dot { border-color:#69F0AE; background:#69F0AE; color:#00144A; }
-    .step.active { color:#fff; }
-    .step.done { color:rgba(255,255,255,.6); }
-    .step-line { flex:1; height:2px; background:rgba(255,255,255,.15); margin:0 6px; }
-    .step-line.done { background:#69F0AE; }
-
-    /* ── Card ── */
-    .card {
-      width:100%; max-width:900px;
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.15);
-      border-radius:16px;
-      padding:32px 36px;
-      backdrop-filter:blur(8px);
-    }
-    .card-title {
-      font-size:20px; font-weight:700; color:#fff; margin-bottom:6px;
-    }
-    .card-sub {
-      font-size:13px; color:rgba(255,255,255,.55); margin-bottom:28px;
-    }
-
-    /* ── Two-column layout ── */
-    .cols { display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
-    @media (max-width:720px) { .cols { grid-template-columns:1fr; } }
-
-    /* ── Form fields ── */
-    .field { margin-bottom:20px; }
-    .field label {
-      display:block; font-size:12px; font-weight:700;
-      color:rgba(255,255,255,.6); margin-bottom:6px;
-      text-transform:uppercase; letter-spacing:.4px;
-    }
-    .field input[type=text] {
-      width:100%; padding:11px 14px;
-      background:rgba(255,255,255,.1);
-      border:1px solid rgba(255,255,255,.2);
-      border-radius:8px; color:#fff; font-family:"72",Arial,sans-serif;
-      font-size:14px; outline:none;
-      transition:border-color .15s, background .15s;
-    }
-    .field input[type=text]::placeholder { color:rgba(255,255,255,.3); }
-    .field input[type=text]:focus {
-      border-color:var(--accent); background:rgba(255,255,255,.14);
-    }
-
-    /* Color row */
-    .color-row { display:flex; align-items:center; gap:10px; }
-    .color-picker {
-      width:46px; height:46px; padding:2px; cursor:pointer; border-radius:8px; flex-shrink:0;
-      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
-    }
-    .color-picker input { width:100%; height:100%; border:none; cursor:pointer; background:transparent; padding:0; }
-    .color-hex {
-      flex:1; padding:11px 14px;
-      background:rgba(255,255,255,.1);
-      border:1px solid rgba(255,255,255,.2);
-      border-radius:8px; color:#fff; font-family:"72",Arial,sans-serif; font-size:14px;
-      outline:none; transition:border-color .15s;
-    }
-    .color-hex:focus { border-color:var(--accent); }
-
-    /* Color swatches */
-    .swatches { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-    .swatch {
-      width:28px; height:28px; border-radius:6px; cursor:pointer;
-      border:2px solid transparent; transition:transform .1s, border-color .1s;
-    }
-    .swatch:hover { transform:scale(1.15); border-color:rgba(255,255,255,.5); }
-
-    /* Logo upload */
-    .logo-upload {
-      border:2px dashed rgba(255,255,255,.25);
-      border-radius:10px; padding:20px;
-      text-align:center; cursor:pointer;
-      transition:border-color .15s, background .15s;
-    }
-    .logo-upload:hover { border-color:var(--accent); background:rgba(0,112,242,.08); }
-    .logo-upload .upload-hint { font-size:13px; color:rgba(255,255,255,.45); margin-top:6px; }
-    .logo-upload .upload-ico { font-size:28px; }
-    #logo-preview {
-      max-height:60px; max-width:180px; object-fit:contain; display:none;
-      margin:0 auto 8px; border-radius:4px;
-    }
-    .clear-logo {
-      font-size:11px; color:rgba(255,255,255,.4); cursor:pointer;
-      text-decoration:underline; display:none; margin-top:6px;
-    }
-
-    /* ── Service checkboxes ── */
-    .services-grid { display:flex; flex-direction:column; gap:12px; }
-    .svc-group {
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:10px; padding:16px 18px;
-    }
-    .svc-group-header {
-      display:flex; align-items:center; gap:10px;
-      cursor:pointer; user-select:none;
-    }
-    .custom-check {
-      width:20px; height:20px; border-radius:5px;
-      border:2px solid rgba(255,255,255,.3); flex-shrink:0;
-      display:flex; align-items:center; justify-content:center;
-      transition:all .15s; background:transparent;
-    }
-    .custom-check.checked {
-      border-color:var(--accent); background:var(--accent);
-    }
-    .custom-check svg { display:none; }
-    .custom-check.checked svg { display:block; }
-    .svc-name { font-size:14px; font-weight:700; color:#fff; }
-    .svc-desc { font-size:11px; color:rgba(255,255,255,.45); margin-top:1px; }
-    .svc-sub { padding:10px 0 0 30px; display:none; flex-direction:column; gap:8px; }
-    .svc-sub.open { display:flex; }
-    .svc-sub-item {
-      display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none;
-    }
-    .sub-check {
-      width:16px; height:16px; border-radius:4px;
-      border:1.5px solid rgba(255,255,255,.25); flex-shrink:0;
-      display:flex; align-items:center; justify-content:center;
-      transition:all .15s;
-    }
-    .sub-check.checked { border-color:var(--accent); background:var(--accent); }
-    .sub-check.checked svg { display:block; }
-    .sub-check svg { display:none; width:10px; height:10px; }
-    .svc-sub-item span { font-size:13px; color:rgba(255,255,255,.7); }
-
-    /* ── Preview panel ── */
-    .preview-panel {
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;
-      overflow:hidden;
-    }
-    .preview-label {
-      font-size:11px; font-weight:700; color:rgba(255,255,255,.4);
-      text-transform:uppercase; letter-spacing:.5px;
-      padding:10px 14px; border-bottom:1px solid rgba(255,255,255,.08);
-    }
-
-    /* Mini dashboard mockup */
-    .dash-mock-header {
-      display:flex; align-items:center; gap:10px;
-      padding:10px 14px;
-      transition:background .3s;
-    }
-    .dash-mock-logo { height:28px; width:auto; max-width:100px; object-fit:contain; }
-    .dash-mock-logo-placeholder {
-      height:28px; width:90px;
-      border-radius:4px;
-      background:rgba(255,255,255,.15);
-    }
-    .dash-mock-title { font-size:13px; font-weight:700; color:#fff; }
-    .dash-mock-sub { font-size:10px; color:rgba(255,255,255,.5); }
-    .dash-mock-tabs {
-      display:flex; gap:0;
-      background:rgba(0,0,0,.3);
-      padding:0 12px; overflow:hidden;
-    }
-    .dash-mock-tab {
-      font-size:10px; padding:7px 10px; cursor:default;
-      color:rgba(255,255,255,.5); font-weight:600;
-      border-bottom:2px solid transparent; white-space:nowrap;
-    }
-    .dash-mock-tab.act { color:#fff; transition:border-color .3s; }
-    .dash-mock-body { padding:12px; display:flex; flex-direction:column; gap:8px; }
-    .mock-kpi-row { display:flex; gap:8px; }
-    .mock-kpi {
-      flex:1; border-radius:6px; padding:8px 10px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .mock-kpi-n { font-size:16px; font-weight:700; color:#fff; }
-    .mock-kpi-l { font-size:9px; color:rgba(255,255,255,.4); margin-top:1px; }
-    .mock-card {
-      border-radius:6px; background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.07);
-      padding:10px 12px;
-    }
-    .mock-card-title { font-size:10px; font-weight:700; color:rgba(255,255,255,.6); margin-bottom:6px; }
-    .mock-bar-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-    .mock-bar-label { font-size:9px; color:rgba(255,255,255,.4); width:50px; text-align:right; flex-shrink:0; }
-    .mock-bar-track { flex:1; height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
-    .mock-bar-fill { height:100%; border-radius:3px; transition:background .3s, width .4s; }
-    .mock-empty {
-      text-align:center; padding:16px 0;
-      font-size:11px; color:rgba(255,255,255,.25);
-    }
-
-    /* ── Buttons ── */
-    .btn-row { display:flex; gap:12px; margin-top:28px; justify-content:flex-end; }
-    .btn-primary {
-      background:var(--accent); color:#fff; border:none;
-      border-radius:8px; padding:12px 28px;
-      font-size:14px; font-weight:700; font-family:"72",Arial,sans-serif;
-      cursor:pointer; transition:background .15s, box-shadow .15s;
-      box-shadow:0 4px 16px rgba(0,112,242,.4);
-    }
-    .btn-primary:hover { background:var(--accent-dark); }
-    .btn-secondary {
-      background:rgba(255,255,255,.1); color:rgba(255,255,255,.8);
-      border:1px solid rgba(255,255,255,.2); border-radius:8px;
-      padding:12px 24px; font-size:14px; font-weight:600;
-      font-family:"72",Arial,sans-serif; cursor:pointer;
+    .nav-left{display:flex;align-items:center;gap:10px;}
+    .nav-sap-logo{height:28px;}
+    .nav-divider{width:1px;height:20px;background:var(--border);}
+    .nav-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.2px;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .nav-back{font-size:13px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px;}
+    .nav-back:hover{text-decoration:underline;}
+    .support-link{font-size:13px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px;}
+    .support-link:hover{text-decoration:underline;}
+    .help-btn{
+      width:30px;height:30px;border-radius:50%;
+      background:var(--blue-light);border:none;cursor:pointer;
+      font-size:14px;font-weight:700;color:var(--blue);
+      display:flex;align-items:center;justify-content:center;
       transition:background .15s;
     }
-    .btn-secondary:hover { background:rgba(255,255,255,.16); }
-    .btn-download {
-      display:inline-flex; align-items:center; gap:8px;
-      background:#69F0AE; color:#00144A; border:none;
-      border-radius:8px; padding:13px 28px;
-      font-size:14px; font-weight:700; font-family:"72",Arial,sans-serif;
-      cursor:pointer; transition:background .15s, box-shadow .15s;
-      box-shadow:0 4px 16px rgba(105,240,174,.35);
+    .help-btn:hover{background:#D0E6FF;}
+
+    /* ── Hero strip (steps) ── */
+    .hero-strip{
+      background:#2E6BE5;
+      padding:28px 28px 32px;
+      text-align:center;
     }
-    .btn-download:hover { background:#4CE8A0; }
+    .hero-strip h2{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+    .hero-strip p{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:22px;}
+
+    /* ── Progress steps ── */
+    .steps{display:flex;gap:0;align-items:center;max-width:420px;margin:0 auto;}
+    .step{display:flex;align-items:center;gap:8px;flex:1;color:rgba(255,255,255,.45);font-size:12px;font-weight:600;}
+    .step .dot{
+      width:28px;height:28px;border-radius:50%;
+      border:2px solid rgba(255,255,255,.3);
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;font-weight:700;flex-shrink:0;transition:all .2s;
+    }
+    .step.active .dot{border-color:#fff;background:#fff;color:#2E6BE5;}
+    .step.done .dot{border-color:#69F0AE;background:#69F0AE;color:#00144A;}
+    .step.active{color:#fff;}
+    .step.done{color:rgba(255,255,255,.7);}
+    .step-line{flex:1;height:2px;background:rgba(255,255,255,.2);margin:0 6px;}
+    .step-line.done{background:#69F0AE;}
+
+    /* ── Body ── */
+    .body{max-width:900px;width:100%;margin:32px auto 64px;padding:0 24px;flex:1;}
+
+    /* ── Card ── */
+    .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px 36px;margin-bottom:20px;}
+    .card-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .card-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+
+    /* ── Two-column ── */
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;}
+    @media(max-width:720px){.cols{grid-template-columns:1fr;}}
+
+    /* ── Form fields ── */
+    .field{margin-bottom:20px;}
+    .field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+    .field input[type=text]{
+      width:100%;padding:11px 14px;
+      background:#fff;border:1px solid var(--border);
+      border-radius:8px;color:var(--text);font-family:"72",Arial,sans-serif;
+      font-size:14px;outline:none;transition:border-color .15s;
+    }
+    .field input[type=text]::placeholder{color:#BBB;}
+    .field input[type=text]:focus{border-color:var(--blue);}
+
+    /* Logo upload */
+    .logo-upload{
+      border:2px dashed var(--border);border-radius:10px;padding:20px;
+      text-align:center;cursor:pointer;background:#FAFAFA;
+      transition:border-color .15s,background .15s;
+    }
+    .logo-upload:hover{border-color:var(--blue);background:var(--blue-light);}
+    .logo-upload .upload-hint{font-size:12px;color:#AAA;margin-top:6px;}
+    .logo-upload .upload-ico{font-size:26px;}
+    #logo-preview{max-height:60px;max-width:180px;object-fit:contain;display:none;margin:0 auto 8px;border-radius:4px;}
+    .clear-logo{font-size:11px;color:var(--blue);cursor:pointer;text-decoration:underline;display:none;margin-top:6px;}
+
+    /* ── Service checkboxes ── */
+    .services-grid{display:flex;flex-direction:column;gap:10px;}
+    .svc-group{background:#FAFAFA;border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+    .svc-group-header{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+    .custom-check{
+      width:20px;height:20px;border-radius:5px;
+      border:2px solid #CCC;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .15s;background:#fff;
+    }
+    .custom-check.checked{border-color:var(--blue);background:var(--blue);}
+    .custom-check svg{display:none;}
+    .custom-check.checked svg{display:block;}
+    .svc-name{font-size:14px;font-weight:700;color:var(--text);}
+    .svc-desc{font-size:11px;color:var(--muted);margin-top:1px;}
+    .svc-sub{padding:10px 0 0 30px;display:none;flex-direction:column;gap:8px;}
+    .svc-sub.open{display:flex;}
+    .svc-sub-item{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+    .sub-check{
+      width:16px;height:16px;border-radius:4px;
+      border:1.5px solid #CCC;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;transition:all .15s;background:#fff;
+    }
+    .sub-check.checked{border-color:var(--blue);background:var(--blue);}
+    .sub-check.checked svg{display:block;}
+    .sub-check svg{display:none;width:10px;height:10px;}
+    .svc-sub-item span{font-size:13px;color:var(--muted);}
+
+    /* ── Preview panel ── */
+    .preview-panel{background:#F5F6F7;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .preview-label{font-size:11px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;border-bottom:1px solid var(--border);}
+
+    /* Mini dashboard mockup */
+    .dash-mock-header{display:flex;align-items:center;gap:10px;padding:10px 14px;transition:background .3s;}
+    .dash-mock-logo{height:28px;width:auto;max-width:100px;object-fit:contain;mix-blend-mode:screen;}
+    .dash-mock-logo-placeholder{height:28px;width:90px;border-radius:4px;background:rgba(255,255,255,.2);}
+    .dash-mock-title{font-size:13px;font-weight:700;color:#fff;}
+    .dash-mock-sub{font-size:10px;color:rgba(255,255,255,.6);}
+    .dash-mock-tabs{display:flex;gap:0;background:#fff;padding:0 12px;overflow:hidden;border-bottom:1px solid var(--border);}
+    .dash-mock-tab{font-size:10px;padding:7px 10px;cursor:default;color:#999;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;}
+    .dash-mock-tab.act{color:var(--blue);transition:border-color .3s;}
+    .dash-mock-body{padding:12px;display:flex;flex-direction:column;gap:8px;background:#fff;}
+    .mock-kpi-row{display:flex;gap:8px;}
+    .mock-kpi{flex:1;border-radius:6px;padding:8px 10px;background:#F5F6F7;border:1px solid var(--border);}
+    .mock-kpi-n{font-size:16px;font-weight:700;color:var(--text);}
+    .mock-kpi-l{font-size:9px;color:#AAA;margin-top:1px;}
+    .mock-empty{text-align:center;padding:16px 0;font-size:11px;color:#BBB;}
+    .mock-card{border-radius:6px;background:#F5F6F7;border:1px solid var(--border);padding:10px 12px;}
+    .mock-card-title{font-size:10px;font-weight:700;color:#AAA;margin-bottom:6px;}
+    .mock-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+    .mock-bar-label{font-size:9px;color:#AAA;width:50px;text-align:right;flex-shrink:0;}
+    .mock-bar-track{flex:1;height:6px;background:#E8E8E8;border-radius:3px;overflow:hidden;}
+    .mock-bar-fill{height:100%;border-radius:3px;transition:background .3s,width .4s;}
+
+    /* ── Buttons ── */
+    .btn-row{display:flex;gap:12px;margin-top:28px;justify-content:flex-end;}
+    .btn-primary{
+      background:var(--blue);color:#fff;border:none;
+      border-radius:8px;padding:12px 28px;
+      font-size:14px;font-weight:700;font-family:"72",Arial,sans-serif;
+      cursor:pointer;transition:background .15s;
+    }
+    .btn-primary:hover{background:#004BB0;}
+    .btn-secondary{
+      background:#fff;color:var(--muted);
+      border:1px solid var(--border);border-radius:8px;
+      padding:12px 24px;font-size:14px;font-weight:600;
+      font-family:"72",Arial,sans-serif;cursor:pointer;transition:background .15s;
+    }
+    .btn-secondary:hover{background:#F5F6F7;}
+    .btn-download{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--blue);color:#fff;border:none;
+      border-radius:8px;padding:13px 28px;
+      font-size:14px;font-weight:700;font-family:"72",Arial,sans-serif;
+      cursor:pointer;transition:background .15s;
+    }
+    .btn-download:hover{background:#004BB0;}
 
     /* ── Step containers ── */
-    .step-page { display:none; }
-    .step-page.active { display:block; }
+    .step-page{display:none;}
+    .step-page.active{display:block;}
 
     /* ── Done box ── */
-    .done-box {
-      text-align:center; padding:16px 0 24px;
+    .done-box{text-align:center;padding:16px 0 24px;}
+    .done-box .check-ico{
+      width:56px;height:56px;border-radius:50%;
+      background:var(--blue-light);margin:0 auto 14px;
+      display:flex;align-items:center;justify-content:center;
     }
-    .done-box .check-ico {
-      width:56px; height:56px; border-radius:50%;
-      background:rgba(105,240,174,.15); margin:0 auto 14px;
-      display:flex; align-items:center; justify-content:center;
+    .done-box h2{color:var(--text);font-size:22px;font-weight:700;margin-bottom:8px;}
+    .done-box p{color:var(--muted);font-size:13px;max-width:380px;margin:0 auto 24px;}
+    .deploy-steps{background:#F5F6F7;border:1px solid var(--border);border-radius:10px;padding:20px 24px;text-align:left;}
+    .deploy-steps h4{color:var(--text);font-size:13px;margin-bottom:12px;font-weight:700;}
+    .deploy-step-item{display:flex;gap:10px;margin-bottom:10px;font-size:12px;color:var(--muted);align-items:flex-start;}
+    .deploy-step-item .n{
+      width:20px;height:20px;border-radius:50%;
+      background:var(--blue);color:#fff;font-size:10px;font-weight:700;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
     }
-    .done-box h2 { color:#fff; font-size:22px; font-weight:700; margin-bottom:8px; }
-    .done-box p { color:rgba(255,255,255,.55); font-size:13px; max-width:380px; margin:0 auto 24px; }
-    .deploy-steps {
-      background:rgba(0,0,0,.25); border-radius:10px;
-      padding:20px 24px; text-align:left;
-    }
-    .deploy-steps h4 { color:rgba(255,255,255,.9); font-size:13px; margin-bottom:12px; font-weight:700; }
-    .deploy-step-item {
-      display:flex; gap:10px; margin-bottom:10px;
-      font-size:12px; color:rgba(255,255,255,.6); align-items:flex-start;
-    }
-    .deploy-step-item .n {
-      width:20px; height:20px; border-radius:50%;
-      background:var(--accent); color:#fff; font-size:10px; font-weight:700;
-      display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
-    }
-    code {
-      background:rgba(255,255,255,.1); border-radius:4px;
-      padding:2px 6px; font-family:monospace; font-size:11px; color:#BDD9FF;
-    }
+    code{background:#EEF4FF;border-radius:4px;padding:2px 6px;font-family:monospace;font-size:11px;color:var(--blue);}
+
+    /* ── Tabs section ── */
+    .tabs-box{background:#FAFAFA;border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+    .tabs-box .section-lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;}
+    .always-on{font-size:11px;color:#AAA;margin-bottom:12px;}
+    .always-on strong{color:var(--muted);}
+    #tabs-preview{display:flex;flex-wrap:wrap;gap:6px;}
+    .tab-pill{background:var(--blue-light);border:1px solid #C5D9F7;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--blue);}
+    #config-preview{font-size:10px;color:var(--muted);font-family:monospace;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto;}
+
+    /* ── Link box ── */
+    .link-box{background:#F5F6F7;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+    .link-box .lbl{font-size:10px;font-weight:700;color:#AAA;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+    .link-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    #btp-link-text{font-size:11px;color:var(--blue);word-break:break-all;flex:1;line-height:1.5;font-family:monospace;}
+    #copy-btn{background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--blue);font-size:11px;padding:5px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:"72",Arial,sans-serif;}
+    #copy-btn:hover{background:var(--blue-light);}
+
+    /* ── Help modal ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:none;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:#fff;border-radius:16px;padding:32px;max-width:480px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.15);}
+    .modal h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+    .modal p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+    .modal-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+    .modal-step{display:flex;align-items:flex-start;gap:12px;}
+    .modal-step .n{width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .modal-step div{font-size:13px;color:var(--muted);line-height:1.5;}
+    .modal-step strong{color:var(--text);}
+    .modal-close{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;font-family:"72",Arial,sans-serif;cursor:pointer;width:100%;}
+    .modal-close:hover{background:#004BB0;}
+    /* ── Color picker ── */
+    .color-row{display:flex;align-items:center;gap:10px;}
+    .color-picker{width:46px;height:46px;padding:3px;cursor:pointer;border-radius:8px;flex-shrink:0;background:#fff;border:1px solid var(--border);}
+    .color-picker input{width:100%;height:100%;border:none;cursor:pointer;background:transparent;padding:0;border-radius:5px;}
+    .color-hex{flex:1;padding:11px 14px;background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:"72",Arial,sans-serif;font-size:14px;outline:none;transition:border-color .15s;}
+    .color-hex:focus{border-color:var(--blue);}
+    .swatches{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+    .swatch{width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:transform .1s,border-color .1s;box-shadow:0 1px 3px rgba(0,0,0,.15);}
+    .swatch:hover{transform:scale(1.15);border-color:rgba(0,0,0,.2);}
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <img src="./sap-logo.svg" alt="SAP">
-    <div>
-      <div class="topbar-title">One SAP</div>
-      <div class="topbar-sub">Dashboard Setup</div>
+  <nav>
+    <div class="nav-left">
+      <img src="./sap-logo.svg" alt="SAP" class="nav-sap-logo">
+      <div class="nav-divider"></div>
+      <span class="nav-title">ONE SAP</span>
     </div>
-    <a href="./index.html" class="back-link">← Back to Hub</a>
+    <div class="nav-right">
+      <a href="./index.html" class="nav-back">← Hub</a>
+      <a href="mailto:alexandra.coyle@sap.com" class="support-link">Need Support?</a>
+      <button class="help-btn" onclick="document.getElementById('help-modal').classList.add('open')">?</button>
+    </div>
+  </nav>
+
+  <div class="hero-strip">
+    <h2>Dashboard Setup</h2>
+    <p>Configure your account's branded ONE SAP dashboard in 3 steps</p>
+    <div class="steps">
+      <div class="step active" id="s1">
+        <div class="dot">1</div>
+        <span>Branding</span>
+      </div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step" id="s2">
+        <div class="dot">2</div>
+        <span>Services</span>
+      </div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step" id="s3">
+        <div class="dot">3</div>
+        <span>Your Link</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Progress indicator -->
-  <div class="steps">
-    <div class="step active" id="s1">
-      <div class="dot">1</div>
-      <span>Branding</span>
-    </div>
-    <div class="step-line" id="sl1"></div>
-    <div class="step" id="s2">
-      <div class="dot">2</div>
-      <span>Services</span>
-    </div>
-    <div class="step-line" id="sl2"></div>
-    <div class="step" id="s3">
-      <div class="dot">3</div>
-      <span>Download</span>
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="help-modal" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal">
+      <h3>How to set up your dashboard</h3>
+      <p>This tool generates a branded ONE SAP dashboard link for any SAP account — no deployment needed.</p>
+      <div class="modal-steps">
+        <div class="modal-step">
+          <div class="n">1</div>
+          <div><strong>Branding</strong> — Enter the company name, pick an accent color, and upload their logo. The live preview updates instantly.</div>
+        </div>
+        <div class="modal-step">
+          <div class="n">2</div>
+          <div><strong>Services</strong> — Choose which SAP engagement types are active (PS, MAX, CAS) and select which dashboard tabs to show.</div>
+        </div>
+        <div class="modal-step">
+          <div class="n">3</div>
+          <div><strong>Your Link</strong> — Copy the BTP link and share it with the account team. Open it directly to see the blank branded dashboard.</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#AAA;margin-bottom:16px;">Need help? Email <a href="mailto:alexandra.coyle@sap.com" style="color:var(--blue);">alexandra.coyle@sap.com</a></p>
+      <button class="modal-close" onclick="document.getElementById('help-modal').classList.remove('open')">Got it</button>
     </div>
   </div>
+
+  <div class="body">
 
   <!-- ── STEP 1: Branding ── -->
   <div class="card step-page active" id="page-1">
@@ -365,13 +325,28 @@
             <div class="clear-logo" id="clear-logo" onclick="event.stopPropagation();clearLogo()">Remove</div>
           </div>
         </div>
+
+        <div class="field">
+          <label>Accent Color</label>
+          <div class="color-row">
+            <div class="color-picker"><input type="color" id="f-color" value="#0057D2" oninput="onColorPicker()"></div>
+            <input type="text" class="color-hex" id="f-hex" value="#0057D2" placeholder="#0057D2" oninput="onHexInput()">
+          </div>
+          <div class="swatches">
+            <div class="swatch" style="background:#0057D2" onclick="setColor('#0057D2')" title="SAP Blue"></div>
+            <div class="swatch" style="background:#00144A" onclick="setColor('#00144A')" title="SAP Navy"></div>
+            <div class="swatch" style="background:#2E6BE5" onclick="setColor('#2E6BE5')" title="SAP Horizon Blue"></div>
+            <div class="swatch" style="background:#107E3E" onclick="setColor('#107E3E')" title="SAP Green"></div>
+            <div class="swatch" style="background:#6A28C7" onclick="setColor('#6A28C7')" title="SAP Purple"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Live preview -->
       <div>
         <div class="preview-label">Live Preview</div>
         <div class="preview-panel">
-          <div class="dash-mock-header" id="prev-header" style="background:#002A86">
+          <div class="dash-mock-header" id="prev-header" style="background:#0057D2">
             <img id="prev-logo" class="dash-mock-logo" src="" style="display:none">
             <div class="dash-mock-logo-placeholder" id="prev-logo-ph"></div>
             <div>
@@ -380,7 +355,7 @@
             </div>
           </div>
           <div class="dash-mock-tabs" id="prev-tabs">
-            <div class="dash-mock-tab act" id="prev-tab-active" style="border-bottom-color:#0070F2">Summary</div>
+            <div class="dash-mock-tab act" id="prev-tab-active" style="border-bottom-color:#0057D2">Summary</div>
             <div class="dash-mock-tab">PS</div>
             <div class="dash-mock-tab">MAX</div>
             <div class="dash-mock-tab">CAS</div>
@@ -426,7 +401,7 @@
         <div class="card-title">Services &amp; Dashboard Tabs</div>
         <div class="card-sub">Select active SAP engagements, then choose exactly which tabs appear on your dashboard.</div>
 
-        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">SAP Engagements</div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">SAP Engagements</div>
         <div class="services-grid" style="margin-bottom:24px;">
 
           <div class="svc-group">
@@ -510,9 +485,9 @@
         </div>
 
         <!-- ── Tab selection ── -->
-        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Dashboard Tabs</div>
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;">
-          <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:12px;">Always on: <strong style="color:rgba(255,255,255,.6);">Summary · RAID Log · CSM Contacts · Events</strong></div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Dashboard Tabs</div>
+        <div class="tabs-box">
+          <div class="always-on">Always on: <strong>Summary · RAID Log · CSM Contacts · Events</strong></div>
           <div style="display:flex;flex-direction:column;gap:8px;">
             <div class="svc-sub-item" onclick="toggleTab('tab-ps')">
               <div class="sub-check checked" id="check-tab-ps"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5 5 4 7.5 8.5 2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
@@ -538,14 +513,14 @@
         </div>
       </div>
 
-      <!-- Services preview -->
-      <div style="display:flex; flex-direction:column; gap:14px;">
+        <!-- Services preview -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
         <div class="preview-panel">
           <div class="preview-label">Dashboard Tabs</div>
           <div style="padding:14px;">
-            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;">Tabs based on your selections:</div>
-            <div id="tabs-preview" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-            <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,.3);line-height:1.6;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tabs based on your selections:</div>
+            <div id="tabs-preview"></div>
+            <div style="margin-top:12px;font-size:11px;color:#AAA;line-height:1.6;">
               Always included: Summary · RAID Log · CSM Contacts · Events
             </div>
           </div>
@@ -554,7 +529,7 @@
         <div class="preview-panel">
           <div class="preview-label">Config Preview</div>
           <div style="padding:14px;">
-            <pre id="config-preview" style="font-size:10px;color:#BDD9FF;font-family:monospace;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto;"></pre>
+            <pre id="config-preview"></pre>
           </div>
         </div>
       </div>
@@ -576,7 +551,7 @@
       <div>
         <div class="preview-label" style="margin-bottom:10px; padding:0;">Dashboard Preview</div>
         <div class="preview-panel">
-          <div class="dash-mock-header" id="prev2-header" style="background:#002A86; padding:14px 18px;">
+          <div class="dash-mock-header" id="prev2-header" style="background:#0057D2; padding:14px 18px;">
             <img id="prev2-logo" class="dash-mock-logo" src="" style="display:none; height:36px;">
             <div class="dash-mock-logo-placeholder" id="prev2-logo-ph" style="height:36px;width:120px;"></div>
             <div>
@@ -592,7 +567,7 @@
               <div class="mock-kpi"><div class="mock-kpi-n" style="color:#69F0AE">0</div><div class="mock-kpi-l">On Track</div></div>
               <div class="mock-kpi"><div class="mock-kpi-n">0</div><div class="mock-kpi-l">Completed</div></div>
             </div>
-            <div class="mock-empty" style="padding:20px 0; font-size:12px; color:rgba(255,255,255,.4);">
+            <div class="mock-empty" style="padding:20px 0; font-size:12px; color:#AAA;">
               Add initiatives, RAID items, and contacts to populate your dashboard.
             </div>
           </div>
@@ -603,18 +578,18 @@
       <div>
         <div class="done-box">
           <div class="check-ico">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#69F0AE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0057D2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <h2 id="step3-name">Your Company</h2>
           <p>Your branded dashboard is live on SAP BTP. Open it now and start adding your data.</p>
         </div>
 
         <!-- Link box -->
-        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px;margin-bottom:14px;">
-          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Your BTP Dashboard Link</div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <code id="btp-link-text" style="font-size:11px;color:#BDD9FF;word-break:break-all;flex:1;line-height:1.5;"></code>
-            <button onclick="copyLink()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;" id="copy-btn">Copy</button>
+        <div class="link-box">
+          <div class="lbl">Your BTP Dashboard Link</div>
+          <div class="link-row">
+            <span id="btp-link-text"></span>
+            <button onclick="copyLink()" id="copy-btn">Copy</button>
           </div>
         </div>
 
@@ -649,6 +624,8 @@
     </div>
   </div>
 
+  </div><!-- /.body -->
+
   <script>
     const state = {
       name: '',
@@ -665,8 +642,8 @@
       if (p) {
         document.getElementById('f-name').value = p;
         state.name = p;
-        syncPreview();
       }
+      syncPreview();
     })();
 
     // ── Color ──
