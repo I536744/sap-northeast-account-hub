@@ -1,6 +1,6 @@
 {
   "authenticationMethod": "route",
-  "sessionTimeout": 30,
+  "sessionTimeout": 480,
   "routes": [
     {
       "source": "^/(?!user-api)(.*)$",
