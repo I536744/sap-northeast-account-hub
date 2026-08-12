@@ -365,24 +365,37 @@
         </div>
 
         <div class="field">
-          <label>Button Text Color</label>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-            <button id="btn-text-white" onclick="setBtnTextColor('#ffffff')"
-              style="padding:7px 18px;border-radius:20px;border:2px solid #0057D2;background:#0057D2;color:#fff;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;">
-              White
-            </button>
-            <button id="btn-text-black" onclick="setBtnTextColor('#000000')"
-              style="padding:7px 18px;border-radius:20px;border:2px solid #D0D0D0;background:#fff;color:#000;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;">
-              Black
-            </button>
-            <div class="color-picker" style="width:36px;height:36px;" title="Custom color">
-              <input type="color" id="btn-text-color-picker" value="#ffffff" oninput="setBtnTextColor(this.value)">
+          <label>Button Style</label>
+          <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <span style="font-size:11px;color:#888;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Background</span>
+              <div class="color-picker" style="width:40px;height:40px;" title="Button background color">
+                <input type="color" id="btn-bg-color-picker" value="#0057D2" oninput="setBtnBgColor(this.value)">
+              </div>
             </div>
-            <span style="font-size:12px;color:#888;">Preview →</span>
-            <button id="btn-text-preview"
-              style="padding:7px 18px;border-radius:20px;border:none;background:#0057D2;color:#fff;font-weight:700;font-size:13px;pointer-events:none;">
-              Button
-            </button>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <span style="font-size:11px;color:#888;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Text Color</span>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button id="btn-text-white" onclick="setBtnTextColor('#ffffff')"
+                  style="padding:6px 14px;border-radius:20px;border:2px solid #0057D2;background:#0057D2;color:#fff;font-weight:700;font-size:12px;cursor:pointer;transition:all .15s;">
+                  White
+                </button>
+                <button id="btn-text-black" onclick="setBtnTextColor('#000000')"
+                  style="padding:6px 14px;border-radius:20px;border:2px solid #D0D0D0;background:#fff;color:#000;font-weight:700;font-size:12px;cursor:pointer;transition:all .15s;">
+                  Black
+                </button>
+                <div class="color-picker" style="width:36px;height:36px;" title="Custom text color">
+                  <input type="color" id="btn-text-color-picker" value="#ffffff" oninput="setBtnTextColor(this.value)">
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <span style="font-size:11px;color:#888;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Preview</span>
+              <button id="btn-text-preview"
+                style="padding:6px 20px;border-radius:20px;border:none;background:#0057D2;color:#fff;font-weight:700;font-size:13px;pointer-events:none;">
+                Button
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -647,6 +660,8 @@
       logoCompressed: null,
       logoNatW: 1, logoNatH: 1,
       color: '#0057D2',
+      btnBgColor: '#0057D2',
+      btnBgCustomized: false,
       btnTextColor: '#ffffff',
       services: { ps: false, max: false, cas: false, ea: false },
       subServices: {},
@@ -666,8 +681,21 @@
     // ── Color ──
     function setColor(hex) {
       state.color = hex;
+      if (!state.btnBgCustomized) {
+        state.btnBgColor = hex;
+        const cp = document.getElementById('btn-bg-color-picker');
+        if (cp) cp.value = hex;
+      }
       document.getElementById('f-color').value = hex;
       document.getElementById('f-hex').value = hex;
+      syncPreview();
+    }
+
+    function setBtnBgColor(hex) {
+      state.btnBgColor = hex;
+      state.btnBgCustomized = true;
+      const cp = document.getElementById('btn-bg-color-picker');
+      if (cp) cp.value = hex;
       syncPreview();
     }
 
@@ -678,8 +706,8 @@
       const wb = document.getElementById('btn-text-white');
       const bb = document.getElementById('btn-text-black');
       const cp = document.getElementById('btn-text-color-picker');
-      wb.style.borderColor = isWhite ? state.color : '#D0D0D0';
-      wb.style.background  = isWhite ? state.color : '#fff';
+      wb.style.borderColor = isWhite ? state.btnBgColor : '#D0D0D0';
+      wb.style.background  = isWhite ? state.btnBgColor : '#fff';
       wb.style.color       = isWhite ? '#fff' : '#000';
       bb.style.borderColor = isBlack ? '#222' : '#D0D0D0';
       bb.style.background  = isBlack ? '#222' : '#fff';
@@ -793,11 +821,11 @@
       document.getElementById('prev-tab-active').style.color = color;
       document.getElementById('bar-accent').style.background = color;
       const saveBtn = document.getElementById('prev-save-btn');
-      if (saveBtn) { saveBtn.style.background = color; saveBtn.style.color = state.btnTextColor; }
+      if (saveBtn) { saveBtn.style.background = state.btnBgColor; saveBtn.style.color = state.btnTextColor; }
 
-      // Update button text color preview
+      // Update button style preview
       const previewBtn = document.getElementById('btn-text-preview');
-      if (previewBtn) { previewBtn.style.background = color; previewBtn.style.color = state.btnTextColor; }
+      if (previewBtn) { previewBtn.style.background = state.btnBgColor; previewBtn.style.color = state.btnTextColor; }
 
       const pl = document.getElementById('prev-logo');
       const ph = document.getElementById('prev-logo-ph');
@@ -812,7 +840,7 @@
       if (h2) h2.style.borderBottomColor = color;
       document.getElementById('prev2-title').textContent = 'OneSAP at ' + name;
       const save2 = document.getElementById('prev2-save-btn');
-      if (save2) { save2.style.background = color; save2.style.color = state.btnTextColor; }
+      if (save2) { save2.style.background = state.btnBgColor; save2.style.color = state.btnTextColor; }
       const pl2 = document.getElementById('prev2-logo');
       const ph2 = document.getElementById('prev2-logo-ph');
       if (state.logoBase64) {
@@ -905,6 +933,7 @@
       const name  = state.name || 'Account';
       const color = state.color.replace('#', '');
       const btnText = state.btnTextColor.replace('#', '');
+      const btnBg   = state.btnBgColor.replace('#', '');
       const tabs = ['summary', 'events'];
       if (state.services.ps)          tabs.push('ps');
       if (state.services.max)         tabs.push('max');
@@ -914,7 +943,7 @@
       if (state.tabs['tab-csm'])      tabs.push('csm');
       if (state.tabs['tab-onboard'])  tabs.push('onboard');
       if (state.tabs['tab-raid'])     tabs.push('raid');
-      return { name, color, btn_text: btnText, tabs: tabs.join(',') };
+      return { name, color, btn_text: btnText, btn_bg: btnBg, tabs: tabs.join(',') };
     }
 
     function buildBtpLink() {
