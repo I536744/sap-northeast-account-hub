@@ -366,7 +366,7 @@
 
         <div class="field">
           <label>Button Text Color</label>
-          <div style="display:flex;gap:10px;align-items:center;">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <button id="btn-text-white" onclick="setBtnTextColor('#ffffff')"
               style="padding:7px 18px;border-radius:20px;border:2px solid #0057D2;background:#0057D2;color:#fff;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;">
               White
@@ -375,6 +375,9 @@
               style="padding:7px 18px;border-radius:20px;border:2px solid #D0D0D0;background:#fff;color:#000;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;">
               Black
             </button>
+            <div class="color-picker" style="width:36px;height:36px;" title="Custom color">
+              <input type="color" id="btn-text-color-picker" value="#ffffff" oninput="setBtnTextColor(this.value)">
+            </div>
             <span style="font-size:12px;color:#888;">Preview →</span>
             <button id="btn-text-preview"
               style="padding:7px 18px;border-radius:20px;border:none;background:#0057D2;color:#fff;font-weight:700;font-size:13px;pointer-events:none;">
@@ -671,14 +674,17 @@
     function setBtnTextColor(hex) {
       state.btnTextColor = hex;
       const isWhite = hex === '#ffffff';
+      const isBlack = hex === '#000000';
       const wb = document.getElementById('btn-text-white');
       const bb = document.getElementById('btn-text-black');
+      const cp = document.getElementById('btn-text-color-picker');
       wb.style.borderColor = isWhite ? state.color : '#D0D0D0';
       wb.style.background  = isWhite ? state.color : '#fff';
       wb.style.color       = isWhite ? '#fff' : '#000';
-      bb.style.borderColor = isWhite ? '#D0D0D0' : '#222';
-      bb.style.background  = isWhite ? '#fff' : '#222';
-      bb.style.color       = isWhite ? '#000' : '#fff';
+      bb.style.borderColor = isBlack ? '#222' : '#D0D0D0';
+      bb.style.background  = isBlack ? '#222' : '#fff';
+      bb.style.color       = isBlack ? '#fff' : '#000';
+      if (cp) cp.value = hex;
       syncPreview();
     }
     function onColorPicker() {
