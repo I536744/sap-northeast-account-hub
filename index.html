@@ -344,6 +344,9 @@
   let currentMatches = [];
   let portfolioOpen  = true;
 
+  // Set welcome immediately so it always shows
+  document.getElementById('welcome-msg').textContent = 'Welcome, Alexandra!';
+
   // Load data + user info in parallel
   Promise.all([
     fetch('./accounts.json').then(r => r.json()),
