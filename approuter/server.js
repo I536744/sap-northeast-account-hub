@@ -1,7 +1,7 @@
 const approuter = require('@sap/approuter');
 const ar = approuter();
 
-ar.first.use('/me', function(req, res) {
+ar.beforeRequestHandler.use('/me', function(req, res) {
   try {
     let firstname = '', email = '';
 
