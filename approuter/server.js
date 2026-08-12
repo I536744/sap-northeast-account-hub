@@ -1,29 +1,28 @@
 const approuter = require('@sap/approuter');
 const ar = approuter();
 
+// Set user cookie on every authenticated request so frontend can read it synchronously
+ar.beforeRequestHandler.use(function(req, res, next) {
+  if (req.user) {
+    const email = (req.user.id || '').toLowerCase();
+    const name  = req.user.name || '';
+    const firstname = name.split(' ')[0] || email.split('@')[0].split('.')[0];
+    const val = encodeURIComponent(JSON.stringify({ n: firstname, e: email }));
+    res.setHeader('Set-Cookie', 'hub_u=' + val + '; Path=/; Max-Age=3600; SameSite=Lax; Secure');
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+  }
+  next();
+});
+
+// /me endpoint as JSON fallback
 ar.beforeRequestHandler.use('/me', function(req, res) {
   try {
     let firstname = '', email = '';
-
-    // Try req.user (set by approuter after XSUAA auth)
     if (req.user) {
-      email = req.user.id || '';
+      email = (req.user.id || '').toLowerCase();
       const name = req.user.name || '';
-      firstname = name.split(' ')[0] || '';
+      firstname = name.split(' ')[0] || email.split('@')[0].split('.')[0];
     }
-
-    // Decode JWT payload for richer claims
-    const auth = req.headers['authorization'];
-    if (auth && auth.startsWith('Bearer ')) {
-      const b64 = auth.slice(7).split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-      const payload = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
-      if (!email) email = payload.email || payload.user_name || payload.sub || '';
-      if (!firstname) {
-        firstname = payload.given_name || payload.firstname ||
-          (email ? email.split('@')[0].split('.')[0] : '');
-      }
-    }
-
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ firstname, email }));
   } catch (e) {

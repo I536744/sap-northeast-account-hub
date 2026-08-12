@@ -346,20 +346,21 @@
   let currentMatches = [];
   let portfolioOpen  = true;
 
-  // Fetch user info, enforce SAP-only gate
-  (IS_LOCAL
-    ? Promise.resolve({ email: 'dev@sap.com', firstname: 'Dev' })
-    : fetch('/me')
-        .then(r => r.ok ? r.json() : null)
-        .catch(() => null)
-  ).then(user => {
-    if (!user) return;
-    userEmail = (user.email || '').toLowerCase();
-    const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
-    const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-    if (firstName) document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
+  // Read user from cookie set by approuter on every authenticated request
+  function getHubUser() {
+    if (IS_LOCAL) return { n: 'Dev', e: 'dev@sap.com' };
+    try {
+      const m = document.cookie.match(/(?:^|; )hub_u=([^;]*)/);
+      return m ? JSON.parse(decodeURIComponent(m[1])) : null;
+    } catch(e) { return null; }
+  }
 
-    // SAP-only gate
+  (function applyUser() {
+    const u = getHubUser();
+    if (!u) return;
+    userEmail = (u.e || '').toLowerCase();
+    const firstName = u.n || '';
+    if (firstName) document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
     if (!IS_LOCAL && !userEmail.endsWith('@sap.com')) {
       document.body.innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:'72',Arial,sans-serif;background:#F5F6F7;">
@@ -372,7 +373,7 @@
           </div>
         </div>`;
     }
-  });
+  })();
 
   // Load data
   Promise.all([
