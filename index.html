@@ -335,6 +335,17 @@
 </div>
 
 <script>
+  const IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+  // Wrapper that detects BTP session expiry (approuter returns HTML redirect → reload)
+  function apiFetch(url, opts) {
+    return fetch(url, opts).then(r => {
+      const ct = r.headers.get('content-type') || '';
+      if (!r.ok && ct.includes('text/html')) { window.location.reload(); return null; }
+      return r;
+    });
+  }
+
   let allAccounts = [];
   let customers   = [];
   let userEmail   = null;
@@ -344,23 +355,37 @@
   let currentMatches = [];
   let portfolioOpen  = true;
 
-  // Fetch user info independently so it never blocks on data loading
-  fetch('/user-api/currentUser')
-    .then(r => r.ok ? r.json() : null)
-    .catch(() => null)
-    .then(user => {
-      if (user) {
-        userEmail = (user.email || '').toLowerCase();
-        const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
-        const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-        if (firstName) document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
-      }
-    });
+  // Step 3: fetch user, enforce SAP-only gate
+  (IS_LOCAL
+    ? Promise.resolve({ email: 'dev@sap.com', firstname: 'Dev' })
+    : apiFetch('/user-api/currentUser').then(r => r && r.ok ? r.json() : null).catch(() => null)
+  ).then(user => {
+    if (!user) return;
+    userEmail = (user.email || '').toLowerCase();
+    const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
+    const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    if (firstName) document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
+
+    // SAP-only gate — block non-@sap.com emails
+    if (!IS_LOCAL && !userEmail.endsWith('@sap.com')) {
+      document.body.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:'72',Arial,sans-serif;background:#F5F6F7;">
+          <img src="./sap-logo.svg" style="height:48px;margin-bottom:32px;">
+          <div style="background:#fff;border:1px solid #E8EAED;border-radius:16px;padding:48px 56px;text-align:center;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.08);">
+            <div style="font-size:2rem;margin-bottom:12px;">🔒</div>
+            <h2 style="font-size:1.2rem;font-weight:700;color:#1D2D3E;margin-bottom:8px;">Access Restricted</h2>
+            <p style="font-size:.9rem;color:#556B82;line-height:1.6;">This tool is only available to SAP employees.<br>Please sign in with your <strong>@sap.com</strong> account.</p>
+            <p style="font-size:.8rem;color:#AAB0B7;margin-top:16px;">${userEmail}</p>
+          </div>
+        </div>`;
+      return;
+    }
+  });
 
   // Load data
   Promise.all([
-    fetch('./accounts.json').then(r => r.json()),
-    fetch('./customers.json').then(r => r.json())
+    apiFetch('./accounts.json').then(r => r ? r.json() : []),
+    apiFetch('./customers.json').then(r => r ? r.json() : [])
   ]).then(([accs, custs]) => {
     allAccounts = accs;
     customers   = custs;
