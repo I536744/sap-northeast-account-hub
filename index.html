@@ -357,9 +357,9 @@
       userEmail = (user.email || '').toLowerCase();
       const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
       const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-      if (firstName) {
-        document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
-      }
+      document.getElementById('welcome-msg').textContent = 'Welcome, ' + (firstName || 'Alexandra') + '!';
+    } else {
+      document.getElementById('welcome-msg').textContent = 'Welcome, Alexandra!';
     }
 
     renderPortfolio();
