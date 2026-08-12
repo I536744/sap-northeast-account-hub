@@ -6,7 +6,7 @@ applications:
     instances: 1
     buildpacks:
       - nodejs_buildpack
-    command: node node_modules/@sap/approuter/approuter.js
+    command: node server.js
     health-check-type: http
     health-check-http-endpoint: /health
     routes:
