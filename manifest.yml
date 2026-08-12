@@ -7,4 +7,4 @@ applications:
     buildpacks:
       - staticfile_buildpack
     routes:
-      - route: ne-onesap-hub.cfapps.us10.hana.ondemand.com
+      - route: ne-onesap-hub-static.cfapps.us10.hana.ondemand.com

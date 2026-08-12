@@ -1,0 +1,12 @@
+{
+  "authenticationMethod": "route",
+  "sessionTimeout": 30,
+  "routes": [
+    {
+      "source": "^/(.*)$",
+      "target": "$1",
+      "destination": "ne-hub-static",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}

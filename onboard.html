@@ -363,7 +363,25 @@
             <div class="swatch" style="background:#475E75" onclick="setColor('#475E75')" title="SAP Slate"></div>
           </div>
         </div>
-      </div>
+
+        <div class="field">
+          <label>Button Text Color</label>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button id="btn-text-white" onclick="setBtnTextColor('#ffffff')"
+              style="padding:7px 18px;border-radius:20px;border:2px solid #0057D2;background:#0057D2;color:#fff;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;">
+              White
+            </button>
+            <button id="btn-text-black" onclick="setBtnTextColor('#000000')"
+              style="padding:7px 18px;border-radius:20px;border:2px solid #D0D0D0;background:#fff;color:#000;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;">
+              Black
+            </button>
+            <span style="font-size:12px;color:#888;">Preview →</span>
+            <button id="btn-text-preview"
+              style="padding:7px 18px;border-radius:20px;border:none;background:#0057D2;color:#fff;font-weight:700;font-size:13px;pointer-events:none;">
+              Button
+            </button>
+          </div>
+        </div>
 
       <!-- Live preview -->
       <div>
@@ -625,6 +643,7 @@
       logoCompressed: null,
       logoNatW: 1, logoNatH: 1,
       color: '#0057D2',
+      btnTextColor: '#ffffff',
       services: { ps: false, max: false, cas: false, ea: false },
       subServices: {},
       tabs: { 'tab-opp': true, 'tab-csm': true, 'tab-onboard': true, 'tab-raid': true }
@@ -645,6 +664,20 @@
       state.color = hex;
       document.getElementById('f-color').value = hex;
       document.getElementById('f-hex').value = hex;
+      syncPreview();
+    }
+
+    function setBtnTextColor(hex) {
+      state.btnTextColor = hex;
+      const isWhite = hex === '#ffffff';
+      const wb = document.getElementById('btn-text-white');
+      const bb = document.getElementById('btn-text-black');
+      wb.style.borderColor = isWhite ? state.color : '#D0D0D0';
+      wb.style.background  = isWhite ? state.color : '#fff';
+      wb.style.color       = isWhite ? '#fff' : '#000';
+      bb.style.borderColor = isWhite ? '#D0D0D0' : '#222';
+      bb.style.background  = isWhite ? '#fff' : '#222';
+      bb.style.color       = isWhite ? '#000' : '#fff';
       syncPreview();
     }
     function onColorPicker() {
@@ -753,7 +786,11 @@
       document.getElementById('prev-tab-active').style.color = color;
       document.getElementById('bar-accent').style.background = color;
       const saveBtn = document.getElementById('prev-save-btn');
-      if (saveBtn) saveBtn.style.background = color;
+      if (saveBtn) { saveBtn.style.background = color; saveBtn.style.color = state.btnTextColor; }
+
+      // Update button text color preview
+      const previewBtn = document.getElementById('btn-text-preview');
+      if (previewBtn) { previewBtn.style.background = color; previewBtn.style.color = state.btnTextColor; }
 
       const pl = document.getElementById('prev-logo');
       const ph = document.getElementById('prev-logo-ph');
@@ -768,7 +805,7 @@
       if (h2) h2.style.borderBottomColor = color;
       document.getElementById('prev2-title').textContent = 'OneSAP at ' + name;
       const save2 = document.getElementById('prev2-save-btn');
-      if (save2) save2.style.background = color;
+      if (save2) { save2.style.background = color; save2.style.color = state.btnTextColor; }
       const pl2 = document.getElementById('prev2-logo');
       const ph2 = document.getElementById('prev2-logo-ph');
       if (state.logoBase64) {
@@ -860,6 +897,7 @@
     function buildBtpParams() {
       const name  = state.name || 'Account';
       const color = state.color.replace('#', '');
+      const btnText = state.btnTextColor.replace('#', '');
       const tabs = ['summary', 'events'];
       if (state.services.ps)          tabs.push('ps');
       if (state.services.max)         tabs.push('max');
@@ -869,7 +907,7 @@
       if (state.tabs['tab-csm'])      tabs.push('csm');
       if (state.tabs['tab-onboard'])  tabs.push('onboard');
       if (state.tabs['tab-raid'])     tabs.push('raid');
-      return { name, color, tabs: tabs.join(',') };
+      return { name, color, btn_text: btnText, tabs: tabs.join(',') };
     }
 
     function buildBtpLink() {
