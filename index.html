@@ -344,27 +344,26 @@
   let currentMatches = [];
   let portfolioOpen  = true;
 
-  // Set welcome immediately so it always shows
-  document.getElementById('welcome-msg').textContent = 'Welcome, Alexandra!';
+  // Fetch user info independently so it never blocks on data loading
+  fetch('/user-api/currentUser')
+    .then(r => r.ok ? r.json() : null)
+    .catch(() => null)
+    .then(user => {
+      if (user) {
+        userEmail = (user.email || '').toLowerCase();
+        const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
+        const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+        if (firstName) document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
+      }
+    });
 
-  // Load data + user info in parallel
+  // Load data
   Promise.all([
     fetch('./accounts.json').then(r => r.json()),
-    fetch('./customers.json').then(r => r.json()),
-    fetch('/user-api/currentUser').then(r => r.ok ? r.json() : null).catch(() => null)
-  ]).then(([accs, custs, user]) => {
+    fetch('./customers.json').then(r => r.json())
+  ]).then(([accs, custs]) => {
     allAccounts = accs;
     customers   = custs;
-
-    if (user) {
-      userEmail = (user.email || '').toLowerCase();
-      const rawName = user.firstname || (userEmail ? userEmail.split('@')[0].split('.')[0] : '');
-      const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-      document.getElementById('welcome-msg').textContent = 'Welcome, ' + (firstName || 'Alexandra') + '!';
-    } else {
-      document.getElementById('welcome-msg').textContent = 'Welcome, Alexandra!';
-    }
-
     renderPortfolio();
     renderAllCards();
   });
