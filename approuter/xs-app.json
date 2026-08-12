@@ -3,7 +3,7 @@
   "sessionTimeout": 30,
   "routes": [
     {
-      "source": "^/(.*)$",
+      "source": "^/(?!user-api)(.*)$",
       "target": "$1",
       "destination": "ne-hub-static",
       "authenticationType": "xsuaa"

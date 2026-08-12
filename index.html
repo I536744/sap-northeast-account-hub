@@ -349,7 +349,7 @@
   // Fetch user info, enforce SAP-only gate
   (IS_LOCAL
     ? Promise.resolve({ email: 'dev@sap.com', firstname: 'Dev' })
-    : fetch('/user-api/currentUser')
+    : fetch('/me')
         .then(r => r.ok ? r.json() : null)
         .catch(() => null)
   ).then(user => {
