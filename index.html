@@ -346,7 +346,6 @@
   let currentMatches = [];
   let portfolioOpen  = true;
 
-  // Read user from cookie set by approuter on every authenticated request
   function getHubUser() {
     if (IS_LOCAL) return { n: 'Dev', e: 'dev@sap.com' };
     try {
@@ -355,11 +354,19 @@
     } catch(e) { return null; }
   }
 
+  function toFirstName(raw) {
+    if (!raw) return '';
+    let s = raw;
+    if (s.includes('@')) s = s.split('@')[0];
+    if (s.includes('.')) s = s.split('.')[0];
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+
   (function applyUser() {
     const u = getHubUser();
     if (!u) return;
     userEmail = (u.e || '').toLowerCase();
-    const firstName = u.n || '';
+    const firstName = toFirstName(u.n) || toFirstName(u.e);
     if (firstName) document.getElementById('welcome-msg').textContent = 'Welcome, ' + firstName + '!';
     const isSapUser = userEmail.endsWith('@sap.com') || /^[is]\d{4,}/i.test(userEmail);
     if (!IS_LOCAL && userEmail && !isSapUser) {
