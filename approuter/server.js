@@ -16,13 +16,15 @@ ar.beforeRequestHandler.use(function(req, res, next) {
   }
 
   // Fall back to req.user
-  if (!email && user)     email     = (user.id   || '').toLowerCase();
+  if (!email && user) email = (user.id || '').toLowerCase();
   if (!firstname && user) firstname = (user.name || '').split(' ')[0];
 
-  // Derive firstname from email if still empty
-  if (!firstname && email.includes('@')) {
-    firstname = email.split('@')[0].split('.')[0];
-  }
+  // If firstname ended up as an email address, extract the first name part
+  if (firstname.includes('@')) firstname = firstname.split('@')[0].split('.')[0];
+  // If still empty, derive from email
+  if (!firstname && email.includes('@')) firstname = email.split('@')[0].split('.')[0];
+  // Capitalize
+  if (firstname) firstname = firstname.charAt(0).toUpperCase() + firstname.slice(1).toLowerCase();
 
   if (firstname || email) {
     const val = encodeURIComponent(JSON.stringify({ n: firstname, e: email.toLowerCase() }));
